@@ -1,14 +1,18 @@
 namespace Craftorio.Logistic;
 
+/// <summary>
+/// The brain of the logistic network meta-system.
+/// </summary>
 public class LogisticNetwork
 {
-    private const int PoolCapacity = 128;
     private readonly LogisticOrdersManager logisticOrders;
     private readonly DefaultEcs.EntitySet nodes;
-    // private readonly CE.Collections.Pool<Providing> providingPool;
-    // private readonly CE.Collections.Pool<Requests> requestsPool;
     private readonly EntitySet provideNodes;
     private readonly EntitySet requestNodes;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogisticNetwork"/> class.
+    /// </summary>
     public LogisticNetwork(World world)
     {
         World = world;
@@ -29,11 +33,24 @@ public class LogisticNetwork
         logisticOrders = new LogisticOrdersManager();
     }
 
+    /// <summary>
+    /// The amount of carriers in the network.
+    /// </summary>
     public int AvailableCarrierCount { get; set; } = 100;
 
+    /// <summary>
+    /// Speed of produced carriers.
+    /// </summary>
     public float CarriersSpeed { get; set; } = 1f;
+
+    /// <summary>
+    /// The ECS world where the network is.
+    /// </summary>
     public World World { get; }
 
+    /// <summary>
+    /// Fills the orders buffers
+    /// </summary>
     public void Rebuff()
     {
         // Cancel all orders and clear the orders queue
@@ -96,6 +113,9 @@ public class LogisticNetwork
         logisticOrders.SetCount(currentOrderIndex);
     }
 
+    /// <summary>
+    /// Gets the closest base node to the given location.
+    /// </summary>
     public bool TryGetClosestBase(Vector2 location, out Entity node)
     {
         var nodes = this.nodes.GetEntities();
@@ -104,6 +124,11 @@ public class LogisticNetwork
         return true;
     }
 
+    /// <summary>
+    /// Updates the network:
+    /// - Send out a carrier if there are orders to fulfill.
+    /// - Update the orders queue if the buffer is empty.
+    /// </summary>
     public void Update()
     {
         // Check if there are any orders to process. If so, process the first one.

@@ -1,5 +1,8 @@
 namespace Craftorio.Logistic;
 
+/// <summary>
+/// Stores, updates and manages logistic orders for consumption of the <see cref="LogisticNetwork"/>.
+/// </summary>
 public class LogisticOrdersManager
 {
     private const int ordersBufferSize = 1024;
@@ -7,13 +10,22 @@ public class LogisticOrdersManager
     private LogisticOrder[] orders = new LogisticOrder[ordersBufferSize];
     private int ordersCount = 0;
 
+    /// <summary>
+    /// Determines whether the orders buffer is empty.
+    /// </summary>
     public bool IsEmpty => nextOrderIndex == ordersCount;
 
+    /// <summary>
+    /// Gets the full span of the orders buffer. This includes noise orders.
+    /// </summary>
     public Span<LogisticOrder> AsSpan()
     {
         return orders.AsSpan();
     }
 
+    /// <summary>
+    /// Cancel all orders and clear the orders queue.
+    /// </summary>
     public void CancelAndClear()
     {
         foreach (var order in QueuedAsSpan())
@@ -21,12 +33,19 @@ public class LogisticOrdersManager
         Clear();
     }
 
+    /// <summary>
+    /// Clear the orders queue.
+    /// </summary>
     public void Clear()
     {
         AsSpan().Fill(default);
         nextOrderIndex = 0;
         ordersCount = 0;
     }
+
+    /// <summary>
+    /// Gets the next order in the queue
+    /// </summary>
     public ref LogisticOrder GetNextOrder()
     {
         if (ordersCount == ordersBufferSize)
@@ -34,6 +53,9 @@ public class LogisticOrdersManager
         return ref orders[nextOrderIndex++];
     }
 
+    /// <summary>
+    /// Gets a span containing the orders in the queue.
+    /// </summary>
     public Span<LogisticOrder> QueuedAsSpan()
     {
         return orders.AsSpan(nextOrderIndex);
@@ -47,6 +69,9 @@ public class LogisticOrdersManager
         ordersCount = count;
     }
 
+    /// <summary>
+    /// Picks up the next order in the queue, given the maximum amount of items to pick up.
+    /// </summary>
     public bool TryDequeue(int amount, out LogisticOrder order)
     {
         if (nextOrderIndex == ordersCount)
