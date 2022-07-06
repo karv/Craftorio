@@ -12,8 +12,8 @@ public static class EntityFactory
         Box iBox = new();
         Box oBox = new();
         var assembler = world.CreateEntity();
-        assembler.Set<IInputBox>(iBox);
-        assembler.Set<IOutputBox>(oBox);
+        assembler.Set<IStoreBox>(iBox);
+        assembler.Set<ITakeableBox>(oBox);
         assembler.Set<TimeConsumption>(new TimeConsumption
         {
             Cost = recipe.BaseTime,
@@ -50,7 +50,7 @@ public static class EntityFactory
         var box = new Box();
         var miner = world.CreateEntity();
         var pData = new Logistic.ProvideData();
-        miner.Set<IOutputBox>(box);
+        miner.Set<ITakeableBox>(box);
         miner.Set<Production.TimeConsumption>(new Production.TimeConsumption { Cost = Cost, Speed = Speed });
         miner.Set<Production.ItemTarget>(new Production.ItemTarget { ItemId = ItemId });
         miner.Set<Logistic.ProvideData>(pData);
@@ -67,8 +67,8 @@ public static class EntityFactory
         box ??= new Box();
         requests ??= new int[0];
         var storageBox = world.CreateEntity();
-        storageBox.Set<IOutputBox>(box);
-        storageBox.Set<IInputBox>(box);
+        storageBox.Set<ITakeableBox>(box);
+        storageBox.Set<IStoreBox>(box);
         var reqDictionary = new Dictionary<int, int>();
         var req = new Logistic.RequestData() { RequestDictionary = reqDictionary };
         foreach (var item in requests)

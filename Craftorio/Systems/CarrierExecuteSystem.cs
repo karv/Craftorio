@@ -51,7 +51,7 @@ public class CarrierExecuteSystem : AEntitySetSystem<int>
         if (distance <= tickDisplacement)
         {
             // Drop the cargo into the target node.
-            var box = movingObject.TargetEntity.Get<IInputBox>();
+            var box = movingObject.TargetEntity.Get<IStoreBox>();
             box.TryStore(data.Content);
             data.Content = default; // Remove the content from the carrier.
 
@@ -84,7 +84,7 @@ public class CarrierExecuteSystem : AEntitySetSystem<int>
             // We are there, we can pick up the cargo, raise the flag?, update the state and return.
             data.State = CarrierState.Delivering;
             // Pick the box from the target of the movement component
-            var box = movingObject.TargetEntity.Get<IOutputBox>();
+            var box = movingObject.TargetEntity.Get<ITakeableBox>();
             data.Content = box.Take(data.Order.ItemId, data.Order.Amount);
 
             // Update the provider status

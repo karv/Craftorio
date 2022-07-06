@@ -1,6 +1,6 @@
 namespace Craftorio.Production;
 
-public struct RecipeComponent
+public readonly struct RecipeComponent
 {
     public int BaseTime { get; init; }
     public ItemStack[] Inputs { get; init; }

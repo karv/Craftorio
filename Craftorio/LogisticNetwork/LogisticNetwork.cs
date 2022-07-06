@@ -23,12 +23,12 @@ public class LogisticNetwork
         provideNodes = world.GetEntities()
             .With<ProvideData>()
             .With<Location>()
-            .With<IOutputBox>()
+            .With<ITakeableBox>()
             .AsSet();
         requestNodes = world.GetEntities()
             .With<RequestData>()
             .With<Location>()
-            .With<IInputBox>()
+            .With<IStoreBox>()
             .AsSet();
         logisticOrders = new LogisticOrdersManager();
     }
@@ -62,7 +62,7 @@ public class LogisticNetwork
         foreach (var requester in requestNodes.GetEntities())
         {
             var requestData = requester.Get<RequestData>();
-            var reqBox = requester.Get<IInputBox>();
+            var reqBox = requester.Get<IStoreBox>();
 
             foreach (var request in requestData.RequestDictionary)
             {
@@ -76,7 +76,7 @@ public class LogisticNetwork
                     if (actualRequest <= 0)
                         break; // Ignore requests that are being satisfied.
 
-                    var provideBox = provider.Get<IOutputBox>();
+                    var provideBox = provider.Get<ITakeableBox>();
                     // How many items are available in the provider?
                     var providingCount = provideBox[request.Key] - requestData.OnTheWayOrders.Count(request.Key);
                     if (providingCount > 0)
