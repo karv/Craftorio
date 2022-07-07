@@ -31,8 +31,8 @@ public struct LogisticOrder
     public void Cancel()
     {
         if (!SourceNode.IsAlive || !DestinationNode.IsAlive) return;
-        SourceNode.Get<ProvideData>().OnTheWayOrders[ItemId] -= Amount;
-        DestinationNode.Get<RequestData>().OnTheWayOrders[ItemId] -= Amount;
+        SourceNode.Get<ProvideData>().ChangeCurrentOrders(ItemId, -Amount);
+        DestinationNode.Get<RequestData>().ChangeCurrentOrders(ItemId, -Amount);
     }
 
     /// <summary>

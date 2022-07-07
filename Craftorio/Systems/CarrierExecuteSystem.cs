@@ -4,7 +4,6 @@ using DefaultEcs.System;
 
 public class CarrierExecuteSystem : AEntitySetSystem<int>
 {
-
     private DefaultEcs.Command.EntityCommandRecorder destroyingRecords;
     public CarrierExecuteSystem(World world) :
         base(world.GetEntities()
@@ -51,13 +50,13 @@ public class CarrierExecuteSystem : AEntitySetSystem<int>
         if (distance <= tickDisplacement)
         {
             // Drop the cargo into the target node.
-            var box = movingObject.TargetEntity.Get<IInputBox>();
+            var box = movingObject.TargetEntity.Get<IStoreBox>();
             box.TryStore(data.Content);
             data.Content = default; // Remove the content from the carrier.
 
             // Update the requester status
             var requester = movingObject.TargetEntity.Get<RequestData>();
-            requester.OnTheWayOrders[data.Order.ItemId] -= data.Order.Amount;
+            requester.ChangeCurrentOrders(data.Order.ItemId, -data.Order.Amount);
 
             // Update the carrier state.
             data.State = CarrierState.Returning;
@@ -84,12 +83,12 @@ public class CarrierExecuteSystem : AEntitySetSystem<int>
             // We are there, we can pick up the cargo, raise the flag?, update the state and return.
             data.State = CarrierState.Delivering;
             // Pick the box from the target of the movement component
-            var box = movingObject.TargetEntity.Get<IOutputBox>();
+            var box = movingObject.TargetEntity.Get<ITakeableBox>();
             data.Content = box.Take(data.Order.ItemId, data.Order.Amount);
 
             // Update the provider status
             var provider = movingObject.TargetEntity.Get<ProvideData>();
-            provider.OnTheWayOrders[data.Order.ItemId] -= data.Order.Amount;
+            provider.ChangeCurrentOrders(data.Order.ItemId, -data.Order.Amount);
 
             // Set the target entity to the target node of the order, since we are moving there
             // to put in the content.

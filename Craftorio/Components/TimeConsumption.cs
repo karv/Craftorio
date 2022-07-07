@@ -5,10 +5,13 @@ namespace Craftorio.Production;
 /// </summary>
 public record struct TimeConsumption
 {
+    public ProductionState ProductionState;
     /// <summary>
     /// Progress/investment of the process.
     /// </summary>
     public int Progress;
+
+    public bool IsCompleted => Progress >= Cost;
 
     /// <summary>
     /// Total investment until the process is finished.

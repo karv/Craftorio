@@ -4,7 +4,7 @@ namespace Craftorio;
 /// Represents an API interface for a box.
 /// Items are stored in a dictionary, where the key is the item's id and the value is the item's quantity.
 /// </summary>
-public class Box : IInputBox, IOutputBox
+public class Box : IStoreBox, ITakeableBox
 {
     private const int DefaultCapacity = 10;
 
@@ -38,10 +38,12 @@ public class Box : IInputBox, IOutputBox
 
     public string DisplayContent()
     {
+        if (items.Count == 0) return "Empty";
+
         var sb = new System.Text.StringBuilder();
         foreach (var item in items)
         {
-            sb.AppendLine($"{item.Key} x {item.Value}");
+            sb.AppendLine($"{item.Value} x {item.Key}");
         }
         sb.Remove(sb.Length - 1, 1); // Remove the last \n
         return sb.ToString();
@@ -51,7 +53,6 @@ public class Box : IInputBox, IOutputBox
     {
         return items.TryGetValue(itemId, out var ret) ? ret : 0;
     }
-
     public ItemStack Take(int itemId, int amount)
     {
         amount = Math.Min(amount, GetCountOf(itemId));
@@ -62,6 +63,26 @@ public class Box : IInputBox, IOutputBox
         items[itemId] -= amount;
         if (items[itemId] == 0) items.Remove(itemId);
         return new ItemStack { ItemId = itemId, Count = amount };
+    }
+    /// <summary>
+    /// Try to remove the specified collection of items from the box. If the box does not contain the specified items,
+    /// the method returns false and the state of the box is unchanged.
+    /// </summary>
+    /// <param name="items">Items to try to take</param>
+    /// <returns><see langword="true"/> iff the items were taken.</returns>
+    public bool TryRemoveItems(ReadOnlySpan<ItemStack> items)
+    {
+        // We suppose the content of items are not repeated.
+
+        // Check if the box contains the specified items.
+        foreach (var item in items)
+            if (GetCountOf(item.ItemId) < item.Count)
+                return false;
+
+        // Remove the items from the box, and return true.
+        foreach (var item in items)
+            RemoveUnchecked(item.ItemId, item.Count);
+        return true;
     }
 
     /// <summary>
@@ -76,12 +97,26 @@ public class Box : IInputBox, IOutputBox
         if (quantity > FreeCapacity)
             return false;
 
-        if (items.ContainsKey(itemId))
-            items[itemId] += quantity;
-        else
-            items.Add(itemId, quantity);
+        UncheckedStore(itemId, quantity);
 
         UsedCapacity += quantity;
+        return true;
+    }
+
+    public bool TryStore(ReadOnlySpan<ItemStack> items)
+    {
+        // Determine if there is enough space
+        var storingQuantity = 0;
+        foreach (var item in items)
+            storingQuantity += item.Count;
+
+        if (storingQuantity > FreeCapacity)
+            return false;
+
+        foreach (var item in items)
+            UncheckedStore(item.ItemId, item.Count);
+
+        UsedCapacity += storingQuantity;
         return true;
     }
 
@@ -97,5 +132,21 @@ public class Box : IInputBox, IOutputBox
         var storeQt = Math.Min(quantity, FreeCapacity);
         TryStore(itemId, storeQt);
         return storeQt;
+    }
+
+    private void RemoveUnchecked(int itemId, int quantity)
+    {
+        if (!items.TryGetValue(itemId, out var count))
+            throw new InvalidOperationException("Tried to remove an item that was not in the box.");
+        items[itemId] -= quantity;
+        UsedCapacity -= quantity;
+    }
+
+    private void UncheckedStore(int itemId, int quantity)
+    {
+        if (items.ContainsKey(itemId))
+            items[itemId] += quantity;
+        else
+            items.Add(itemId, quantity);
     }
 }

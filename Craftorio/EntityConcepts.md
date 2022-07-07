@@ -6,6 +6,15 @@
 - **ItemTarget**: to determine the item that the miner produces
 - **Provider**: So this entity can be part of the logistic network
 
+### Assembler:
+- **IOutputBox**: to store the output of the assembler
+- **IInputBox**: to store the input of the assembler
+- **TimeConsumption**: to store the time consumption of the assembler
+- **Recipe**: to determine the recipe that the assembler produces
+- **Provider?**: So this entity can be part of the logistic network
+- **Requester?**: So this entity can be part of the logistic network
+
+
 ## LogisticNetwork
 ### Carrier:
 - **Location**: the location in the world of the carrier

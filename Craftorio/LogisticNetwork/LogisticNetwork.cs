@@ -23,12 +23,12 @@ public class LogisticNetwork
         provideNodes = world.GetEntities()
             .With<ProvideData>()
             .With<Location>()
-            .With<IOutputBox>()
+            .With<ITakeableBox>()
             .AsSet();
         requestNodes = world.GetEntities()
             .With<RequestData>()
             .With<Location>()
-            .With<IInputBox>()
+            .With<IStoreBox>()
             .AsSet();
         logisticOrders = new LogisticOrdersManager();
     }
@@ -62,23 +62,22 @@ public class LogisticNetwork
         foreach (var requester in requestNodes.GetEntities())
         {
             var requestData = requester.Get<RequestData>();
-            var reqBox = requester.Get<IInputBox>();
+            var reqBox = requester.Get<IStoreBox>();
 
-            foreach (var request in requestData.RequestDictionary)
+            foreach (var request in requestData.AsDictionary())
             {
-
                 // Iterate for each provider, to find a provider to form an order.
                 // For now, just pick the first provider that has the requested item.
                 foreach (var provider in provideNodes.GetEntities())
                 {
                     // How many items we need to pick up?
-                    var actualRequest = request.Value - requestData.OnTheWayOrders.Count(request.Key);
+                    var actualRequest = request.Value - requestData.OrdersOf(request.Key);
                     if (actualRequest <= 0)
                         break; // Ignore requests that are being satisfied.
 
-                    var provideBox = provider.Get<IOutputBox>();
+                    var provideBox = provider.Get<ITakeableBox>();
                     // How many items are available in the provider?
-                    var providingCount = provideBox[request.Key] - requestData.OnTheWayOrders.Count(request.Key);
+                    var providingCount = provideBox[request.Key] - requestData.OrdersOf(request.Key);
                     if (providingCount > 0)
                     {
                         var orderCount = Math.Min(actualRequest, providingCount);
@@ -90,10 +89,10 @@ public class LogisticNetwork
                             ItemId = request.Key,
                             Amount = orderCount
                         };
-                        // Update the provide and request counts
 
-                        provider.Get<ProvideData>().OnTheWayOrders[request.Key] += order.Amount;
-                        requester.Get<RequestData>().OnTheWayOrders[request.Key] += order.Amount;
+                        // Update the provide and request counts
+                        provider.Get<ProvideData>().ChangeCurrentOrders(request.Key, order.Amount);
+                        requester.Get<RequestData>().ChangeCurrentOrders(request.Key, order.Amount);
 
                         // Add the order to the queue
                         ordersSpan[currentOrderIndex++] = order;

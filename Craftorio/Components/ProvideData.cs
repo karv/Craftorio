@@ -10,7 +10,20 @@ public class ProvideData
     /// <summary>
     /// The count of items which are expecting a carrier to take the content.
     /// </summary>
-    public Dictionary<int, int> OnTheWayOrders { get; } = new Dictionary<int, int>();
+    private Dictionary<int, int> OnTheWayOrders { get; } = new Dictionary<int, int>();
+
+    public void ChangeCurrentOrders(int itemId, int amount)
+    {
+        // Add the request to the queue
+        if (OnTheWayOrders.TryGetValue(itemId, out var order))
+        {
+            OnTheWayOrders[itemId] = order + amount;
+        }
+        else
+        {
+            OnTheWayOrders.Add(itemId, amount);
+        }
+    }
 
     /// <summary>
     /// Adds the keys into the dictionary.
@@ -23,4 +36,5 @@ public class ProvideData
                 OnTheWayOrders.Add(key, 0);
         }
     }
+
 }
