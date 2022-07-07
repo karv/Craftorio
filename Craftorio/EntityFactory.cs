@@ -17,7 +17,8 @@ public static class EntityFactory
         assembler.Set<TimeConsumption>(new TimeConsumption
         {
             Cost = recipe.BaseTime,
-            Speed = speed
+            Speed = speed,
+            ProductionState = ProductionState.WaitingForResources
         });
         assembler.Set(new Location { AsVector = location });
         assembler.Set(recipe.ToComponent());
@@ -27,9 +28,9 @@ public static class EntityFactory
             var reqData = new RequestData();
             // Add the request data to the assembler
             foreach (var input in recipe.Inputs)
-                reqData.RequestDictionary.Add(input.ItemId, input.Count);
-            assembler.Set<ProvideData>();
-            assembler.Set<RequestData>();
+                reqData.AddRequest(input.ItemId, input.Count);
+            assembler.Set<ProvideData>(provData);
+            assembler.Set<RequestData>(reqData);
         }
         return assembler;
     }
@@ -51,7 +52,12 @@ public static class EntityFactory
         var miner = world.CreateEntity();
         var pData = new Logistic.ProvideData();
         miner.Set<ITakeableBox>(box);
-        miner.Set<Production.TimeConsumption>(new Production.TimeConsumption { Cost = Cost, Speed = Speed });
+        miner.Set<Production.TimeConsumption>(new Production.TimeConsumption
+        {
+            Cost = Cost,
+            Speed = Speed,
+            ProductionState = ProductionState.Working
+        });
         miner.Set<Production.ItemTarget>(new Production.ItemTarget { ItemId = ItemId });
         miner.Set<Logistic.ProvideData>(pData);
         pData.EnsureDictionaryKeys(new[] { ItemId });
@@ -69,12 +75,9 @@ public static class EntityFactory
         var storageBox = world.CreateEntity();
         storageBox.Set<ITakeableBox>(box);
         storageBox.Set<IStoreBox>(box);
-        var reqDictionary = new Dictionary<int, int>();
-        var req = new Logistic.RequestData() { RequestDictionary = reqDictionary };
+        var req = new Logistic.RequestData();
         foreach (var item in requests)
-        {
-            reqDictionary.Add(item, int.MaxValue);
-        }
+            req.AddRequest(item, int.MaxValue);
         storageBox.Set<Logistic.RequestData>(req);
         req.EnsureDictionaryKeys();
         storageBox.Set<Location>(new Location { AsVector = location });

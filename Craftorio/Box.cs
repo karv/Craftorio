@@ -38,10 +38,12 @@ public class Box : IStoreBox, ITakeableBox
 
     public string DisplayContent()
     {
+        if (items.Count == 0) return "Empty";
+
         var sb = new System.Text.StringBuilder();
         foreach (var item in items)
         {
-            sb.AppendLine($"{item.Key} x {item.Value}");
+            sb.AppendLine($"{item.Value} x {item.Key}");
         }
         sb.Remove(sb.Length - 1, 1); // Remove the last \n
         return sb.ToString();
@@ -80,7 +82,6 @@ public class Box : IStoreBox, ITakeableBox
         // Remove the items from the box, and return true.
         foreach (var item in items)
             RemoveUnchecked(item.ItemId, item.Count);
-
         return true;
     }
 
@@ -138,6 +139,7 @@ public class Box : IStoreBox, ITakeableBox
         if (!items.TryGetValue(itemId, out var count))
             throw new InvalidOperationException("Tried to remove an item that was not in the box.");
         items[itemId] -= quantity;
+        UsedCapacity -= quantity;
     }
 
     private void UncheckedStore(int itemId, int quantity)

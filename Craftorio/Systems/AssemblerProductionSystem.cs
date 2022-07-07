@@ -25,8 +25,19 @@ public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSyst
             // If there is space in the output box, reset the TimeConsumption component
             // and put a new item of the output of the recipe type onto the output box.
             if (outputBox.TryStore(recipe.Outputs))
+            {
                 timeConsumption.Reset();
-            else timeConsumption.ProductionState = ProductionState.OutputFull;
+                World.Publish(new ProductionCompleted(entity));
+            }
+            else
+            {
+                // Do not change the state if the current state is OutputFull.
+                if (timeConsumption.ProductionState != ProductionState.OutputFull)
+                {
+                    timeConsumption.ProductionState = ProductionState.OutputFull;
+                    World.Publish(new ProductionStateChanged(entity));
+                }
+            }
         }
         else
         if (timeConsumption.ProductionState == ProductionState.WaitingForResources)
@@ -35,7 +46,10 @@ public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSyst
             // If the entity has the required resources, start working
             var inputBox = entity.Get<ITakeableBox>();
             if (inputBox.TryRemoveItems(recipe.Inputs))
+            {
                 timeConsumption.ProductionState = ProductionState.Working;
+                World.Publish(new ProductionStateChanged(entity));
+            }
         }
     }
 }

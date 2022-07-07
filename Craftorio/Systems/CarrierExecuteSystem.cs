@@ -4,7 +4,6 @@ using DefaultEcs.System;
 
 public class CarrierExecuteSystem : AEntitySetSystem<int>
 {
-
     private DefaultEcs.Command.EntityCommandRecorder destroyingRecords;
     public CarrierExecuteSystem(World world) :
         base(world.GetEntities()
@@ -57,7 +56,7 @@ public class CarrierExecuteSystem : AEntitySetSystem<int>
 
             // Update the requester status
             var requester = movingObject.TargetEntity.Get<RequestData>();
-            requester.OnTheWayOrders[data.Order.ItemId] -= data.Order.Amount;
+            requester.ChangeCurrentOrders(data.Order.ItemId, -data.Order.Amount);
 
             // Update the carrier state.
             data.State = CarrierState.Returning;
@@ -89,7 +88,7 @@ public class CarrierExecuteSystem : AEntitySetSystem<int>
 
             // Update the provider status
             var provider = movingObject.TargetEntity.Get<ProvideData>();
-            provider.OnTheWayOrders[data.Order.ItemId] -= data.Order.Amount;
+            provider.ChangeCurrentOrders(data.Order.ItemId, -data.Order.Amount);
 
             // Set the target entity to the target node of the order, since we are moving there
             // to put in the content.
