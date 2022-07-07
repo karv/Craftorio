@@ -1,7 +1,13 @@
 namespace Craftorio.Production;
 
+/// <summary>
+/// Controls the production of entities based of <see cref="Craftorio.Production.Recipe"/>.
+/// </summary>
 public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSystem<int>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AssemblerProductionSystem"/> class.
+    /// </summary>
     public AssemblerProductionSystem(World world) :
     base(world.GetEntities()
         .With<IStoreBox>()  // To take the resources from
@@ -11,6 +17,9 @@ public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSyst
         .AsSet())
     { }
 
+    /// <summary>
+    /// Updates the state of the specified entity.
+    /// </summary>
     protected override void Update(int state, in Entity entity)
     {
         ref var timeConsumption = ref entity.Get<TimeConsumption>();

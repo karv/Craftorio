@@ -1,5 +1,8 @@
 namespace Craftorio;
 
+/// <summary>
+/// Represents a box that can store items.
+/// </summary>
 public interface IStoreBox : IBox
 {
     public bool TryStore(ItemStack item) => TryStore(item.ItemId, item.Count);

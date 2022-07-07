@@ -1,6 +1,12 @@
 namespace Craftorio.Production;
 
+/// <summary>
+/// Occurs when a miner entity completed a mining cycle, producing an item into its box.
+/// </summary>
 public readonly struct MiningCompleted
 {
-    public Entity Miner { readonly get; init; }
+    /// <summary>
+    /// Miner entity which completed the mining cycle.
+    /// </summary>
+    public readonly Entity Miner { get; init; }
 }

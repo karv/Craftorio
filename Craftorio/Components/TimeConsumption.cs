@@ -5,12 +5,22 @@ namespace Craftorio.Production;
 /// </summary>
 public record struct TimeConsumption
 {
+    /// <summary>
+    /// The current state of consumption.
+    /// </summary>
     public ProductionState ProductionState;
+
     /// <summary>
     /// Progress/investment of the process.
     /// </summary>
     public int Progress;
 
+    /// <summary>
+    /// Gets a value indicating whether the process is finished.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if the process is finished; otherwise, <c>false</c>.
+    /// </value>
     public bool IsCompleted => Progress >= Cost;
 
     /// <summary>

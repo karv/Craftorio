@@ -1,14 +1,19 @@
 ﻿namespace Craftorio;
-
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
+/// <summary>
+/// The main MonoGame class.
+/// </summary>
 public class Game : Microsoft.Xna.Framework.Game
 {
     private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
     private Logistic.LogisticNetwork network;
     private DefaultEcs.System.ISystem<int> updateSystem;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Game"/> class.
+    /// </summary>
     public Game()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -24,8 +29,15 @@ public class Game : Microsoft.Xna.Framework.Game
         );
         network = new(World);
     }
+
+    /// <summary>
+    /// The game ECS world.
+    /// </summary>
     public World World { get; private set; }
 
+    /// <summary>
+    /// Draw the state of the game.
+    /// </summary>
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -33,6 +45,9 @@ public class Game : Microsoft.Xna.Framework.Game
         base.Draw(gameTime);
     }
 
+    /// <summary>
+    /// Initialize the game.
+    /// </summary>
     protected override void Initialize()
     {
         base.Initialize();
@@ -67,11 +82,16 @@ public class Game : Microsoft.Xna.Framework.Game
         World.Subscribe<Production.ProductionStateChanged>(When);
     }
 
+    /// <summary>
+    /// Load the sprites.
+    /// </summary>
     protected override void LoadContent()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
     }
 
+    /// <summary>
+    /// Update the state of the game.
+    /// </summary>
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))

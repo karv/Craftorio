@@ -2,9 +2,19 @@ namespace Craftorio.Logistic;
 using System.Runtime.CompilerServices;
 using DefaultEcs.System;
 
-public class CarrierExecuteSystem : AEntitySetSystem<int>
+/// <summary>
+/// Controls the behavior of the carriers, by updating its state in function of its fixed order.
+/// </summary>
+public sealed class CarrierExecuteSystem : AEntitySetSystem<int>
 {
+    /// <summary>
+    /// Recorder to destroy the entity when they complete their work.
+    /// </summary>
     private DefaultEcs.Command.EntityCommandRecorder destroyingRecords;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CarrierExecuteSystem"/> class.
+    /// </summary>
     public CarrierExecuteSystem(World world) :
         base(world.GetEntities()
             .With<CarrierData>()
@@ -15,12 +25,18 @@ public class CarrierExecuteSystem : AEntitySetSystem<int>
         destroyingRecords = new DefaultEcs.Command.EntityCommandRecorder();
     }
 
+    /// <summary>
+    /// Destroy the carries when they complete their work.
+    /// </summary>
     protected override void PostUpdate(int state)
     {
         // Actually destroy the entities in the destroyingRecords.
         destroyingRecords.Execute();
     }
 
+    /// <summary>
+    /// Update the state of a specified carrier entity, depending on its fixed order.
+    /// </summary>
     protected override void Update(int state, in Entity entity)
     {
         ref var data = ref entity.Get<CarrierData>();

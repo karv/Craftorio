@@ -2,9 +2,21 @@ namespace Craftorio;
 using Production;
 using Logistic;
 
+/// <summary>
+/// Module that exposes method for commonly used entity types.
+/// </summary>
 public static class EntityFactory
 {
-
+    /// <summary>
+    /// Creates an assembler-type entity.
+    /// </summary>
+    /// <param name="world">ECS World.</param>
+    /// <param name="location">Location of the entity.</param>
+    /// <param name="recipe">Recipe of the assembler.</param>
+    /// <param name="includeLogisticSupport">is true, will add logistic requester-providers
+    /// depending on the recipe</param>
+    /// <param name="speed">the speed multiplier of the assembler</param>
+    /// <returns>The created entity.</returns>
     public static Entity CreateAssembler(World world, Vector2 location, Recipe recipe,
     bool includeLogisticSupport = false,
     float speed = 1f)
@@ -35,6 +47,12 @@ public static class EntityFactory
         return assembler;
     }
 
+    /// <summary>
+    /// Creates a base node entity.
+    /// </summary>
+    /// <param name="world">ECS world.</param>
+    /// <param name="location">Location of the entity.</param>
+    /// <returns>The created entity.</returns>
     public static Entity CreateBase(World world, Vector2 location)
     {
         var baseEntity = world.CreateEntity();
@@ -43,6 +61,16 @@ public static class EntityFactory
 
         return baseEntity;
     }
+
+    /// <summary>
+    /// Creates a miner entity.
+    /// </summary>
+    /// <param name="world">ECS world.</param>
+    /// <param name="location">Location of the entity.</param>
+    /// <param name="Cost">Cost in milliseconds of every mined items.</param>
+    /// <param name="Speed">Speed multiplier.</param>
+    /// <param name="ItemId">Item that is mined.</param>
+    /// <returns></returns>
     public static Entity CreateMiner(World world, Vector2 location,
     int Cost = 1000,
     float Speed = 1f,
@@ -60,11 +88,17 @@ public static class EntityFactory
         });
         miner.Set<Production.ItemTarget>(new Production.ItemTarget { ItemId = ItemId });
         miner.Set<Logistic.ProvideData>(pData);
-        pData.EnsureDictionaryKeys(new[] { ItemId });
         miner.Set(new Location { AsVector = location });
         return miner;
     }
 
+    /// <summary>
+    /// Creates a storage entity with access to the logistic network.
+    /// </summary>
+    /// <param name="world">ECS world.</param>
+    /// <param name="location">Location of the entity.</param>
+    /// <param name="box">If not null, the storage box.</param>
+    /// <param name="requests">If not null, the requested items.</param>
     public static Entity CreateStorageBox(World world, Vector2 location,
     Box? box = null,
     int[]? requests = null
@@ -79,7 +113,6 @@ public static class EntityFactory
         foreach (var item in requests)
             req.AddRequest(item, int.MaxValue);
         storageBox.Set<Logistic.RequestData>(req);
-        req.EnsureDictionaryKeys();
         storageBox.Set<Location>(new Location { AsVector = location });
         return storageBox;
     }

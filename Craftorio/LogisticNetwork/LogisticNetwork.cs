@@ -64,7 +64,7 @@ public class LogisticNetwork
             var requestData = requester.Get<RequestData>();
             var reqBox = requester.Get<IStoreBox>();
 
-            foreach (var request in requestData.AsDictionary())
+            foreach (var request in requestData.AsDictionary)
             {
                 // Iterate for each provider, to find a provider to form an order.
                 // For now, just pick the first provider that has the requested item.

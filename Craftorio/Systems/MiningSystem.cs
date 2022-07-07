@@ -1,6 +1,13 @@
 namespace Craftorio.Production;
+
+/// <summary>
+/// Controls the behavior of miners, by creating target items when their cycle is completed.
+/// </summary>
 public class MiningSystem : DefaultEcs.System.AEntitySetSystem<int>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MiningSystem"/> class.
+    /// </summary>
     public MiningSystem(World world) :
     base(world.GetEntities()
         .With<ITakeableBox>()
@@ -10,6 +17,9 @@ public class MiningSystem : DefaultEcs.System.AEntitySetSystem<int>
     {
     }
 
+    /// <summary>
+    /// If the specified miner entity completed a mining cycle, create a target item into its box.
+    /// </summary>
     protected override void Update(int state, in Entity entity)
     {
         // Update the state of the entity's time consumption.

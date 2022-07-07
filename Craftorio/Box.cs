@@ -12,6 +12,10 @@ public class Box : IStoreBox, ITakeableBox
     /// The dictionary of items in the box. The key is the item ID, and the value is the item's quantity.
     /// </summary>
     private readonly Dictionary<int, int> items;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Box"/> class.
+    /// </summary>
     public Box()
     {
         Capacity = DefaultCapacity;
@@ -31,11 +35,16 @@ public class Box : IStoreBox, ITakeableBox
     /// <summary>
     /// Gets the used capacity.
     /// </summary>
-    /// <value></value>
     public int UsedCapacity { get; private set; }
 
+    /// <summary>
+    /// Gets the amount of items of the specified type. This is equivalent to the <see cref="GetCountOf"/> method.
+    /// </summary>
     public int this[int itemId] => GetCountOf(itemId);
 
+    /// <summary>
+    /// Gets a string representation of the content of the box.
+    /// </summary>
     public string DisplayContent()
     {
         if (items.Count == 0) return "Empty";
@@ -49,10 +58,21 @@ public class Box : IStoreBox, ITakeableBox
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Gets the amount of items of the specified type.
+    /// </summary>
     public int GetCountOf(int itemId)
     {
         return items.TryGetValue(itemId, out var ret) ? ret : 0;
     }
+
+    /// <summary>
+    /// Takes the specified items from this box, and updates the content of the box
+    /// </summary>
+    /// <param name="itemId">Type of items to take.</param>
+    /// <param name="amount">Max amount of items to take.</param>
+    /// <remarks>If the box doesn't contain enough items, the method will return the amount of items that could be taken.</remarks>
+    /// <returns>A new stack representing the taken items.</returns>
     public ItemStack Take(int itemId, int amount)
     {
         amount = Math.Min(amount, GetCountOf(itemId));
@@ -64,6 +84,7 @@ public class Box : IStoreBox, ITakeableBox
         if (items[itemId] == 0) items.Remove(itemId);
         return new ItemStack { ItemId = itemId, Count = amount };
     }
+
     /// <summary>
     /// Try to remove the specified collection of items from the box. If the box does not contain the specified items,
     /// the method returns false and the state of the box is unchanged.
@@ -103,6 +124,12 @@ public class Box : IStoreBox, ITakeableBox
         return true;
     }
 
+    /// <summary>
+    /// Try to store an array of stacks into the box.
+    /// </summary>
+    /// <param name="items">Items to store</param>
+    /// <remarks>If the box have no enough capacity, no items will be stored.</remarks>
+    /// <returns><see langword="true"/> iff the items were stored.</returns>
     public bool TryStore(ReadOnlySpan<ItemStack> items)
     {
         // Determine if there is enough space
@@ -116,7 +143,6 @@ public class Box : IStoreBox, ITakeableBox
         foreach (var item in items)
             UncheckedStore(item.ItemId, item.Count);
 
-        UsedCapacity += storingQuantity;
         return true;
     }
 
@@ -148,5 +174,7 @@ public class Box : IStoreBox, ITakeableBox
             items[itemId] += quantity;
         else
             items.Add(itemId, quantity);
+
+        UsedCapacity += quantity;
     }
 }

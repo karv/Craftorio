@@ -1,7 +1,17 @@
 namespace Craftorio;
 
+/// <summary>
+/// Represents a stack of items of the same type.
+/// </summary>
 public struct ItemStack
 {
-    public int Count { get; set; }
-    public int ItemId { get; init; }
+    /// <summary>
+    /// Count of items.
+    /// </summary>
+    public int Count { readonly get; set; }
+
+    /// <summary>
+    /// Type of items.
+    /// </summary>
+    public int ItemId { readonly get; init; }
 }
