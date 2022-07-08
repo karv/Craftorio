@@ -13,12 +13,12 @@ public class Recipe
     /// <summary>
     /// Required inputs.
     /// </summary>
-    public ItemStack[] Inputs { get; init; }
+    public ItemStack[] Inputs { get; init; } = Array.Empty<ItemStack>();
 
     /// <summary>
     /// Required outputs.
     /// </summary>
-    public ItemStack[] Outputs { get; init; }
+    public ItemStack[] Outputs { get; init; } = Array.Empty<ItemStack>();
 
     /// <summary>
     /// Creates a new component from this recipe.

@@ -5,6 +5,12 @@ namespace Craftorio;
 /// </summary>
 public interface ITakeableBox : IBox
 {
+    /// <summary>
+    /// Takes items from the box. This will update the content of the box.
+    /// </summary>
+    /// <param name="itemId">Id of the type of the item to take.</param>
+    /// <param name="amount">Non negative value indicating the amount of units of the item to take.</param>
+    /// <returns>An item stack representing the taken items.</returns>
     public ItemStack Take(int itemId, int amount);
 
     /// <summary>
