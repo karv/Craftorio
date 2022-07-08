@@ -130,11 +130,13 @@ public class LogisticNetwork
     /// </summary>
     public void Update()
     {
+        if (this.AvailableCarrierCount == 0) return;
         // Check if there are any orders to process. If so, process the first one.
         if (logisticOrders.TryDequeue(1, out var order))
         {
             // TODO: create a carrier for the order.
             CreateCarrier(order);
+            AvailableCarrierCount--;
             return;
         }
 
@@ -145,8 +147,8 @@ public class LogisticNetwork
     private Entity CreateCarrier(LogisticOrder order)
     {
         var carrier = World.CreateEntity();
-        // Put it somewhere, at the origin for now
-        carrier.Set<Location>();
+        // Put it somewhere, at the origin for now // TODO
+        carrier.Set<Location>((Location)new RectangleF(0, 0, 10, 10));
         carrier.Set(new CarrierData
         {
             Order = order,
@@ -159,6 +161,7 @@ public class LogisticNetwork
             MoveSpeed = CarriersSpeed,
             TargetEntity = order.SourceNode
         });
+        carrier.Set(new Drawing.Sprite { Color = Color.Purple });
         World.Publish(new CarrierCreated { Carrier = carrier });
         return carrier;
     }

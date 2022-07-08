@@ -17,7 +17,7 @@ public static class EntityFactory
     /// depending on the recipe</param>
     /// <param name="speed">the speed multiplier of the assembler</param>
     /// <returns>The created entity.</returns>
-    public static Entity CreateAssembler(World world, Vector2 location, Recipe recipe,
+    public static Entity CreateAssembler(World world, RectangleF location, Recipe recipe,
     bool includeLogisticSupport = false,
     float speed = 1f)
     {
@@ -32,7 +32,7 @@ public static class EntityFactory
             Speed = speed,
             ProductionState = ProductionState.WaitingForResources
         });
-        assembler.Set(new Location { AsVector = location });
+        assembler.Set(new Location(location));
         assembler.Set(recipe.ToComponent());
         if (includeLogisticSupport)
         {
@@ -44,6 +44,7 @@ public static class EntityFactory
             assembler.Set<ProvideData>(provData);
             assembler.Set<RequestData>(reqData);
         }
+        assembler.Set(new Drawing.Sprite { Color = Color.Red });
         return assembler;
     }
 
@@ -53,11 +54,12 @@ public static class EntityFactory
     /// <param name="world">ECS world.</param>
     /// <param name="location">Location of the entity.</param>
     /// <returns>The created entity.</returns>
-    public static Entity CreateBase(World world, Vector2 location)
+    public static Entity CreateBase(World world, RectangleF location)
     {
         var baseEntity = world.CreateEntity();
-        baseEntity.Set(new Location { AsVector = location });
+        baseEntity.Set(new Location(location));
         baseEntity.Set<Logistic.NodeBase>();
+        baseEntity.Set(new Drawing.Sprite { Color = Color.White });
 
         return baseEntity;
     }
@@ -71,7 +73,7 @@ public static class EntityFactory
     /// <param name="Speed">Speed multiplier.</param>
     /// <param name="ItemId">Item that is mined.</param>
     /// <returns></returns>
-    public static Entity CreateMiner(World world, Vector2 location,
+    public static Entity CreateMiner(World world, RectangleF location,
     int Cost = 1000,
     float Speed = 1f,
     int ItemId = 1)
@@ -88,7 +90,8 @@ public static class EntityFactory
         });
         miner.Set<Production.ItemTarget>(new Production.ItemTarget { ItemId = ItemId });
         miner.Set<Logistic.ProvideData>(pData);
-        miner.Set(new Location { AsVector = location });
+        miner.Set(new Location(location));
+        miner.Set(new Drawing.Sprite { Color = Color.Green });
         return miner;
     }
 
@@ -99,7 +102,7 @@ public static class EntityFactory
     /// <param name="location">Location of the entity.</param>
     /// <param name="box">If not null, the storage box.</param>
     /// <param name="requests">If not null, the requested items.</param>
-    public static Entity CreateStorageBox(World world, Vector2 location,
+    public static Entity CreateStorageBox(World world, RectangleF location,
     Box? box = null,
     int[]? requests = null
     )
@@ -113,7 +116,9 @@ public static class EntityFactory
         foreach (var item in requests)
             req.AddRequest(item, int.MaxValue);
         storageBox.Set<Logistic.RequestData>(req);
-        storageBox.Set<Location>(new Location { AsVector = location });
+        storageBox.Set<Location>(new Location(location));
+        storageBox.Set(new Drawing.Sprite { Color = Color.Yellow });
+
         return storageBox;
     }
 }
