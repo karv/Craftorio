@@ -13,19 +13,28 @@ public class Box : IStoreBox, ITakeableBox
     /// </summary>
     private readonly Dictionary<int, int> items;
 
+    private int capacity = DefaultCapacity;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Box"/> class.
     /// </summary>
     public Box()
     {
-        Capacity = DefaultCapacity;
         items = new();
     }
 
     /// <summary>
     /// Gets the capacity of the box.
     /// </summary>
-    public int Capacity { get; init; }
+    public int Capacity
+    {
+        get => capacity;
+        init
+        {
+            if (value < 0) throw new InvalidOperationException("Capacity must be greater than or equal to zero.");
+            capacity = value;
+        }
+    }
 
     /// <summary>
     /// Gets the free capacity.
@@ -115,12 +124,11 @@ public class Box : IStoreBox, ITakeableBox
     /// <remarks>If the box have no enough capacity, no items will be stored.</remarks>
     public bool TryStore(int itemId, int quantity)
     {
+        if (quantity < 0) throw new InvalidOperationException("Quantity must be greater than or equal to zero.");
         if (quantity > FreeCapacity)
             return false;
 
         UncheckedStore(itemId, quantity);
-
-        UsedCapacity += quantity;
         return true;
     }
 
