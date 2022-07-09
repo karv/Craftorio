@@ -9,4 +9,7 @@ public record struct NodeBase
     /// Capacity of carriers storage.
     /// </summary>
     public int Capacity;
+
+    public Queue<LogisticOrder> OrdersQueue;
+    public LogisticNetwork Network;
 }

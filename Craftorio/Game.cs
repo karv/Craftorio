@@ -25,6 +25,7 @@ public class Game : Microsoft.Xna.Framework.Game
             new Production.MiningSystem(World),
             new MovingObjectSystem(World),
             new Production.AssemblerProductionSystem(World),
+            new Logistic.BaseNodeCarrierCreationSystem(World),
             new Logistic.CarrierExecuteSystem(World)
         );
         network = new(World);
@@ -62,7 +63,7 @@ public class Game : Microsoft.Xna.Framework.Game
         EntityFactory.CreateStorageBox(World, new(100, 100), requests: new[] { 1, 2 });
 
         // A node so things work
-        EntityFactory.CreateBase(World, new(0, 0));
+        EntityFactory.CreateBase(World, new(0, 0), network);
 
         // An assembler that transforms itemId 1 to itemId 5 every 1 second
         var recipe = new Production.Recipe
@@ -77,9 +78,9 @@ public class Game : Microsoft.Xna.Framework.Game
         box.TryStore(1, 10);
 
         // Listen to carrier created events
-        // World.Subscribe<Logistic.CarrierCreated>(When);
-        World.Subscribe<Production.ProductionCompleted>(When);
-        World.Subscribe<Production.ProductionStateChanged>(When);
+        World.Subscribe<Logistic.CarrierCreated>(When);
+        //World.Subscribe<Production.ProductionCompleted>(When);
+        //World.Subscribe<Production.ProductionStateChanged>(When);
     }
 
     /// <summary>
@@ -98,14 +99,13 @@ public class Game : Microsoft.Xna.Framework.Game
             Exit();
 
         updateSystem.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
-        network.Update();
     }
 
     private void When(in Logistic.CarrierCreated msg)
     {
         var data = msg.Carrier.Get<Logistic.CarrierData>();
 
-        Console.WriteLine($"Carrier created: {msg.Carrier}. {data.Order}");
+        Console.WriteLine($"Carrier created: {msg.Carrier}. {data.Order} by {msg.BaseNode}");
     }
 
     private void When(in Production.ProductionCompleted msg)

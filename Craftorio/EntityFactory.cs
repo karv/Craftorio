@@ -53,12 +53,22 @@ public static class EntityFactory
     /// <param name="world">ECS world.</param>
     /// <param name="location">Location of the entity.</param>
     /// <returns>The created entity.</returns>
-    public static Entity CreateBase(World world, Vector2 location)
+    public static Entity CreateBase(World world, Vector2 location, LogisticNetwork network)
     {
         var baseEntity = world.CreateEntity();
         baseEntity.Set(new Location { AsVector = location });
-        baseEntity.Set<Logistic.NodeBase>();
-
+        baseEntity.Set<Logistic.NodeBase>(new Logistic.NodeBase
+        {
+            Capacity = 10,
+            OrdersQueue = new Queue<LogisticOrder>(),
+            Network = network
+        });
+        baseEntity.Set(new TimeConsumption
+        {
+            Cost = 1000,
+            Speed = 1,
+            ProductionState = ProductionState.Working
+        });
         return baseEntity;
     }
 

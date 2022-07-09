@@ -5,7 +5,11 @@ namespace Craftorio.Logistic;
 /// </summary>
 public class LogisticNetwork
 {
-    private readonly LogisticOrdersManager logisticOrders;
+    // private readonly LogisticOrdersManager logisticOrders;
+    /// <summary>
+    /// Stores the logistic orders which are buffered, but not yet assigned to a base node..
+    /// </summary>
+    private readonly Queue<LogisticOrder> logisticOrdersQueue = new Queue<LogisticOrder>();
     private readonly DefaultEcs.EntitySet nodes;
     private readonly EntitySet provideNodes;
     private readonly EntitySet requestNodes;
@@ -30,7 +34,7 @@ public class LogisticNetwork
             .With<Location>()
             .With<IStoreBox>()
             .AsSet();
-        logisticOrders = new LogisticOrdersManager();
+        //logisticOrders = new LogisticOrdersManager();
     }
 
     /// <summary>
@@ -48,15 +52,32 @@ public class LogisticNetwork
     /// </summary>
     public World World { get; }
 
+    public void AssignOrders()
+    {
+        // Take elements from the order queue and assign them to a base node which is closest to the provider entity.
+        foreach (var order in logisticOrdersQueue)
+        {
+            var provider = order.SourceNode;
+            var providerLocation = provider.Get<Location>().AsVector;
+            Entity closestNode;
+            if (!TryGetClosestBase(providerLocation, out closestNode, true)) return;
+            closestNode.Get<NodeBase>().OrdersQueue.Enqueue(order);
+        }
+
+        // If iterated over the entire logistic queue, rebuild it.
+        if (logisticOrdersQueue.Count == 0)
+            Rebuff();
+    }
+
     /// <summary>
     /// Fills the orders buffers
     /// </summary>
     public void Rebuff()
     {
         // Cancel all orders and clear the orders queue
-        logisticOrders.CancelAndClear();
-        var ordersSpan = logisticOrders.AsSpan();
-        var currentOrderIndex = 0;
+        logisticOrdersQueue.Clear();
+        //var ordersSpan = logisticOrders.AsSpan();
+        //var currentOrderIndex = 0;
 
         // Iterate for each requester, to find a provider to form an order
         foreach (var requester in requestNodes.GetEntities())
@@ -94,72 +115,39 @@ public class LogisticNetwork
                         provider.Get<ProvideData>().ChangeCurrentOrders(request.Key, order.Amount);
                         requester.Get<RequestData>().ChangeCurrentOrders(request.Key, order.Amount);
 
-                        // Add the order to the queue
-                        ordersSpan[currentOrderIndex++] = order;
-
-                        // If the buffer is full, terminate this method
-                        if (currentOrderIndex == ordersSpan.Length)
-                        {
-                            logisticOrders.SetCount(currentOrderIndex);
-                            return;
-                        }
+                        this.logisticOrdersQueue.Enqueue(order);
                     }
                 }
             }
         }
-
-        // Set the count of the orders queue
-        logisticOrders.SetCount(currentOrderIndex);
     }
 
     /// <summary>
     /// Gets the closest base node to the given location.
     /// </summary>
-    public bool TryGetClosestBase(Vector2 location, out Entity node)
+    public bool TryGetClosestBase(Vector2 location, out Entity node, bool withPositiveCapacity = false)
     {
         var nodes = this.nodes.GetEntities();
-        // Return the first node, for now.
-        node = nodes[0];
-        return true;
-    }
-
-    /// <summary>
-    /// Updates the network:
-    /// - Send out a carrier if there are orders to fulfill.
-    /// - Update the orders queue if the buffer is empty.
-    /// </summary>
-    public void Update()
-    {
-        // Check if there are any orders to process. If so, process the first one.
-        if (logisticOrders.TryDequeue(1, out var order))
+        var closestDistanceSquared = float.MaxValue;
+        node = default(Entity);
+        foreach (var baseNode in nodes)
         {
-            // TODO: create a carrier for the order.
-            CreateCarrier(order);
-            return;
+            // If the positive flag is set, we only want to get bases with positive capacity.
+            if (withPositiveCapacity && baseNode.Get<NodeBase>().Capacity <= 0)
+                continue;
+
+            var baseLocation = baseNode.Get<Location>().AsVector;
+            var distanceSquared = Vector2.DistanceSquared(location, baseLocation);
+            if (distanceSquared < closestDistanceSquared)
+            {
+                closestDistanceSquared = distanceSquared;
+                node = baseNode;
+            }
         }
 
-        // If there are no orders, check if there are any requests.
-        Rebuff();
-    }
+        if (node == default(Entity))
+            return false;
 
-    private Entity CreateCarrier(LogisticOrder order)
-    {
-        var carrier = World.CreateEntity();
-        // Put it somewhere, at the origin for now
-        carrier.Set<Location>();
-        carrier.Set(new CarrierData
-        {
-            Order = order,
-            State = CarrierState.Requesting,
-            Content = new ItemStack { Count = 0, ItemId = order.ItemId },
-            Network = this
-        });
-        carrier.Set(new MovingObject
-        {
-            MoveSpeed = CarriersSpeed,
-            TargetEntity = order.SourceNode
-        });
-        World.Publish(new CarrierCreated { Carrier = carrier });
-        return carrier;
+        return true;
     }
 }

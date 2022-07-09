@@ -9,4 +9,5 @@ public readonly record struct CarrierCreated
     /// The created carrier.
     /// </summary>
     public readonly Entity Carrier { get; init; }
+    public readonly Entity BaseNode { get; init; }
 }

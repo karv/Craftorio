@@ -3,7 +3,7 @@ namespace Craftorio.Logistic;
 /// <summary>
 /// Contains information on how a carrier must move.
 /// </summary>
-public struct LogisticOrder
+public record struct LogisticOrder
 {
     /// <summary>
     /// Amount of items to move.
