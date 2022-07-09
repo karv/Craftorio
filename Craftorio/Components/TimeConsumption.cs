@@ -21,7 +21,7 @@ public record struct TimeConsumption
     /// <value>
     /// <c>true</c> if the process is finished; otherwise, <c>false</c>.
     /// </value>
-    public bool IsCompleted => Progress >= Cost;
+    public readonly bool IsCompleted => Progress >= Cost;
 
     /// <summary>
     /// Total investment until the process is finished.
