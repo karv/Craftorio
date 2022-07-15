@@ -35,3 +35,10 @@ A state machine must be designed to handle the following states:
 - **Requesting**: the carrier is moving to a node that requests resources.
 - **Delivering**: the carrier is moving to a node that provides resources.
 - **Returning**: the carrier is moving to a **base**.
+
+# Ideas
+## As entity
+The logistic network should be implemented as an element of the ECS model, not outside it. This way the code would become cleaner by removng the Logistic Network singleton and replaing it with a system. The following entities and components should be considred:
+- An entity for each logistic network (possibly inly one, but the code would not change substancially if it were generalized). Each network would contain a unique ID, and access the content by a multimap via the world.
+- A component unique for logistic network, so all the data used in the **old** logistic network must be moved into that component (for example, the content of items of the network, and the buffered logistic orders.)
+- All logistic entities such as providers, requesters, etc, must also have a component addressing the ID of the network where they belong. Consider merging all/some of these components?
