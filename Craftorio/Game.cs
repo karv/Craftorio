@@ -7,10 +7,10 @@ using Microsoft.Xna.Framework.Input;
 /// </summary>
 public class Game : Microsoft.Xna.Framework.Game
 {
-    private DefaultEcs.System.ISystem<int> drawSystem;
+    private DefaultEcs.System.ISystem<int>? drawSystem;
     private GraphicsDeviceManager graphics;
     private Logistic.LogisticNetwork network;
-    private DefaultEcs.System.ISystem<int> updateSystem;
+    private DefaultEcs.System.ISystem<int>? updateSystem;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Game"/> class.
@@ -20,6 +20,7 @@ public class Game : Microsoft.Xna.Framework.Game
         graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+
         World = new World();
         network = new(World);
     }
@@ -34,8 +35,8 @@ public class Game : Microsoft.Xna.Framework.Game
     /// </summary>
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-        drawSystem.Update(gameTime.ElapsedGameTime.Milliseconds);
+        GraphicsDevice.Clear(Color.DimGray);
+        drawSystem!.Update(gameTime.ElapsedGameTime.Milliseconds);
     }
 
     /// <summary>
@@ -43,6 +44,7 @@ public class Game : Microsoft.Xna.Framework.Game
     /// </summary>
     protected override void Initialize()
     {
+        SetupServices();
         base.Initialize();
         InitializeSystems();
 
@@ -50,7 +52,47 @@ public class Game : Microsoft.Xna.Framework.Game
         var camera = new MonoGame.Extended.OrthographicCamera(GraphicsDevice);
         camera.LookAt(new(0, 0));
         World.Set(camera);
+        SetupInitialState(World);
 
+    }
+
+    /// <summary>
+    /// Load the sprites.
+    /// </summary>
+    protected override void LoadContent()
+    {
+    }
+
+    /// <summary>
+    /// Update the state of the game.
+    /// </summary>
+    protected override void Update(GameTime gameTime)
+    {
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            Exit();
+
+        updateSystem!.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
+        network.Update();
+    }
+
+    private void InitializeSystems()
+    {
+        updateSystem = new DefaultEcs.System.SequentialSystem<int>(
+            new Production.TimeConsumingSystem(World),
+            new Production.MiningSystem(World),
+            new MovingObjectSystem(World),
+            new Production.AssemblerProductionSystem(World),
+            new Logistic.CarrierExecuteSystem(World),
+            new Drawing.UI.DisplayTextGenerator(World) { Font = Content.Load<SpriteFont>("Fonts/Default") }
+        );
+        drawSystem = new DefaultEcs.System.SequentialSystem<int>(
+            new Drawing.SpriteDrawing(World, GraphicsDevice),
+            new Drawing.TextDrawing(World, GraphicsDevice)
+        );
+    }
+
+    private void SetupInitialState(World World)
+    {
         // Add some miners with different speeds and targets
         EntityFactory.CreateMiner(World, new(-20, 20, 20, 20), Cost: 1000, Speed: 1, ItemId: 1);
         EntityFactory.CreateMiner(World, new(0, 20, 20, 20), Cost: 1000, Speed: 1.3f, ItemId: 2);
@@ -82,37 +124,9 @@ public class Game : Microsoft.Xna.Framework.Game
 
     }
 
-    /// <summary>
-    /// Load the sprites.
-    /// </summary>
-    protected override void LoadContent()
+    private void SetupServices()
     {
-    }
-
-    /// <summary>
-    /// Update the state of the game.
-    /// </summary>
-    protected override void Update(GameTime gameTime)
-    {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
-
-        updateSystem.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
-        network.Update();
-    }
-
-    private void InitializeSystems()
-    {
-        updateSystem = new DefaultEcs.System.SequentialSystem<int>(
-            new Production.TimeConsumingSystem(World),
-            new Production.MiningSystem(World),
-            new MovingObjectSystem(World),
-            new Production.AssemblerProductionSystem(World),
-            new Logistic.CarrierExecuteSystem(World)
-        );
-        drawSystem = new DefaultEcs.System.SequentialSystem<int>(
-            new Drawing.SpriteDrawing(World, GraphicsDevice)
-        );
+        Services.AddService<SpriteBox>(new SpriteBox(World, graphics) { DefaultFont = Content.Load<SpriteFont>("Fonts/Default") });
     }
 
     private void When(in Logistic.CarrierCreated msg)

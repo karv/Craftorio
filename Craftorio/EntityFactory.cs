@@ -118,6 +118,10 @@ public static class EntityFactory
         storageBox.Set<Logistic.RequestData>(req);
         storageBox.Set<Location>(new Location(location));
         storageBox.Set(new Drawing.Sprite { Color = Color.Yellow });
+        storageBox.Set(new Drawing.UI.MouseOverDisplayText
+        {
+            GetText = (Entity entity) => entity.Get<IStoreBox>().DisplayContent()
+        });
 
         return storageBox;
     }
