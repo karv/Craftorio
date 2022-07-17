@@ -126,7 +126,6 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void SetupServices()
     {
-        Services.AddService<SpriteBox>(new SpriteBox(World, graphics) { DefaultFont = Content.Load<SpriteFont>("Fonts/Default") });
     }
 
     private void When(in Logistic.CarrierCreated msg)

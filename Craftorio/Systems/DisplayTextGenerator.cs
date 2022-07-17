@@ -47,7 +47,7 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
     /// Font used to produce the tooltip entities.
     /// </summary>
     /// <value>A value must be set, otherwise an exception could be thrown.</value>
-    public SpriteFont Font { get; init; }
+    public SpriteFont? Font { get; set; }
 
     /// <summary>
     /// After the update call, if the <see cref="IsClearingInfoBoxes"/> field is set to true, all tooltip entities will be removed.
@@ -73,7 +73,29 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
         IsClearingInfoBoxes = false;
     }
 
-    protected void Update(int state, in Entity entity, out bool entityCatched)
+    /// <summary>
+    /// Updates the entities in the system.
+    /// </summary>
+    protected override void Update(int state, ReadOnlySpan<Entity> entities)
+    {
+        // Only update the first entity.
+        foreach (ref readonly var entity in entities)
+        {
+            Update(state, entity, out var entityCatched);
+
+            // If an entity got the mouse over state, we can stop the loop.
+            if (entityCatched)
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Updates the entities, to determine whether create or remove tooltip entities.
+    /// </summary>
+    /// <param name="state">Elapsed milliseconds.</param>
+    /// <param name="entity">Updating entity.</param>
+    /// <param name="entityCatched">outs <see langword="true"/>, iff the current entity catched the mouse</param>
+    private void Update(int state, in Entity entity, out bool entityCatched)
     {
         // Get the location and display state of this entity
         ref var location = ref entity.Get<Location>();
@@ -97,7 +119,7 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
                     hintEntity.Set(new Location(location.Bounds));
                     hintEntity.Set(new TextSprite
                     {
-                        Font = Font,
+                        Font = Font!,  // Se assume the font is already set, otherwise its clear that the game must break.
                         Text = displayState.Text,
                         Color = Color.White
                     });
@@ -118,18 +140,6 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
                 IsClearingInfoBoxes = true;
                 displayState.IsCurrentlyDisplayed = false;
             }
-        }
-    }
-    protected override void Update(int state, ReadOnlySpan<Entity> entities)
-    {
-        // Only update the first entity.
-        foreach (ref readonly var entity in entities)
-        {
-            Update(state, entity, out var entityCatched);
-
-            // If an entity got the mouse over state, we can stop the loop.
-            if (entityCatched)
-                break;
         }
     }
 }
