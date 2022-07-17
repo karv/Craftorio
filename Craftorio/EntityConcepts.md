@@ -51,8 +51,11 @@ Requesters are entities that can request items from the network (like a assemble
 ## Information
 Information entities are entities that are not part of the game, but are used to display information to the player.
 
-### SpriteBox:
-Sprite box are entities that display a sprite or a texture.
-- **Location**: the location in the world of the information entity
-- **DisplayInfoState**: Information on the current state of the rendering of the information entity
-- **Sprite**: to display the information entity
+### Tooltips:
+All tooltip entities are just `TextSprite` entities, with a `IsInfoBox` flag component. This is a mark to the engine saying that it is safe to remove the entity without corrupting the game.
+
+#### Tooltip generators:
+Some entities can generate tooltips when the mouse is over them. This is done by adding a `MouseOverDisplayText` component to that entity. The entity must have a location so the engine can determine if the mouse is over it.
+- **Location**: the location in the world of the entity.
+- **MouseOverDisplayText**: the text to display when the mouse is over the entity.
+When the mouse is over the entity for a given amount of time, `DisplayTextGenerator` system will create a `TextSprite` entity with the text specified in the `MouseOverDisplayText` component; of course, this entity have the `IsInfoBox` flag.
