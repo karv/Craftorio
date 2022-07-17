@@ -20,4 +20,9 @@ public record struct TextSprite
     /// Color of the text.
     /// </summary>
     public Color Color;
+
+    /// <summary>
+    /// Color of the background.
+    /// </summary>
+    public Color BackgroundColor;
 }

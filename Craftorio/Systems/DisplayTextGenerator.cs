@@ -116,12 +116,23 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
                     displayState.Text = displayState.GetText?.Invoke(entity) ?? "";
                     // Create the entity
                     var hintEntity = World.CreateEntity();
-                    hintEntity.Set(new Location(location.Bounds));
+
+                    // Use the measure of the font to get the smallest rectangle that fits the text.
+                    var textSize = Font!.MeasureString(displayState.Text);
+                    var textBounds = new RectangleF(
+                        location.Bounds.TopLeft,
+                        textSize);
+                    hintEntity.Set(new Location(
+                        new RectangleF(
+                            textBounds.TopLeft,
+                            textBounds.Size))
+                    );
                     hintEntity.Set(new TextSprite
                     {
                         Font = Font!,  // Se assume the font is already set, otherwise its clear that the game must break.
                         Text = displayState.Text,
-                        Color = Color.White
+                        Color = Color.White,
+                        BackgroundColor = Color.Black * 0.67f,
                     });
                     hintEntity.Set<IsInfoBox>();
                 }

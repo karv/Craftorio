@@ -47,6 +47,11 @@ public sealed class TextDrawing : AEntitySetSystem<int>
     {
         ref var location = ref entity.Get<Location>();
         ref var textSprite = ref entity.Get<TextSprite>();
+        // Draw the background.
+        spriteBatch.FillRectangle(
+            location.Bounds,
+            textSprite.BackgroundColor);
+        // Write the text.
         spriteBatch.DrawString(textSprite.Font, textSprite.Text, location.Bounds.TopLeft, textSprite.Color);
     }
 }
