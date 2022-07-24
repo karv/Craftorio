@@ -28,6 +28,6 @@ public class MovingObjectSystem : AEntitySetSystem<int>
         var deltaPosition = (movingObject.TargetEntity.Get<Location>().AsVector - location.AsVector);
         deltaPosition.Normalize();
         deltaPosition *= movingObject.MoveSpeed;
-        location.AsVector += deltaPosition;
+        location.Offset(deltaPosition);
     }
 }

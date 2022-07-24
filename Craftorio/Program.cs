@@ -1,2 +1,2 @@
-﻿using var game = new Game();
+﻿using var game = new Craftorio.Game();
 game.Run();
