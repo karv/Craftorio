@@ -45,6 +45,11 @@ public static class EntityFactory
             assembler.Set<RequestData>(reqData);
         }
         assembler.Set(new Drawing.Sprite { Color = Color.Red });
+        assembler.Set(new Drawing.UI.MouseOverDisplayText
+        {
+            GetText = (Entity entity) => $"{entity.Get<RecipeComponent>().Outputs[0]}",
+        });
+
         return assembler;
     }
 
@@ -61,6 +66,10 @@ public static class EntityFactory
         baseEntity.Set<Logistic.NodeBase>();
         baseEntity.Set(new Drawing.Sprite { Color = Color.White });
 
+        baseEntity.Set(new Drawing.UI.MouseOverDisplayText
+        {
+            Text = "Just a base"
+        });
         return baseEntity;
     }
 
@@ -92,6 +101,10 @@ public static class EntityFactory
         miner.Set<Logistic.ProvideData>(pData);
         miner.Set(new Location(location));
         miner.Set(new Drawing.Sprite { Color = Color.Green });
+        miner.Set(new Drawing.UI.MouseOverDisplayText
+        {
+            GetText = (Entity entity) => $"Mining {entity.Get<Production.ItemTarget>().ItemId}",
+        });
         return miner;
     }
 

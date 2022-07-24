@@ -25,11 +25,6 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
     private OrthographicCamera? camera;
 
     /// <summary>
-    /// Measure the time the mouse have been over an entity.
-    /// </summary>
-    private int mouseOverTimer;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="DisplayTextGenerator"/> class.
     /// </summary>
     public DisplayTextGenerator(World world) :
@@ -102,15 +97,18 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
         ref var displayState = ref entity.Get<MouseOverDisplayText>();
 
         // if the mouse is over this entity:
-        var mouseScreenLocation = Microsoft.Xna.Framework.Input.Mouse.GetState().Position.ToVector2();
+        var mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+        var mouseScreenLocation = mouseState.Position.ToVector2();
         var mouseWorldLocation = camera!.ScreenToWorld(mouseScreenLocation);
         entityCatched = displayState.IsCurrentlyHovered = location.Bounds.Contains(mouseWorldLocation);
+
+        // This should be refactored
         if (displayState.IsCurrentlyHovered)
         {
             // If the mouse is not currently displayed, update the timer.
             if (!displayState.IsCurrentlyDisplayed)
             {
-                if (mouseOverTimer > MouseOverDisplayTextTime)
+                if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
                 {
                     displayState.IsCurrentlyDisplayed = true;
                     displayState.Text = displayState.GetText?.Invoke(entity) ?? "";
@@ -136,15 +134,10 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
                     });
                     hintEntity.Set<IsInfoBox>();
                 }
-                else
-                    mouseOverTimer += state;
             }
         }
         else  // Mouse is not over this entity.
         {
-            // Reset the timer...
-            mouseOverTimer = 0;
-
             // ... and the entity is marked as being displayed, flag to removal and update the state.
             if (displayState.IsCurrentlyDisplayed)
             {
