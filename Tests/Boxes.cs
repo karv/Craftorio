@@ -12,8 +12,8 @@ public class Boxes
         box.TryStore(0, 1);
         var taken = box.Take(0, 1);
         // taken must be 1 of the type 0
-        Assert.AreEqual(1, taken.Count);
-        Assert.AreEqual(0, taken.ItemId);
+        Assert.That(taken.Count, Is.EqualTo(1));
+        Assert.That(taken.ItemId, Is.EqualTo(0));
     }
     [Test]
     public void AddFewTakeMany()
@@ -22,8 +22,8 @@ public class Boxes
         box.TryStore(0, 1);
         var taken = box.Take(0, 10);
         // taken must be 1 of the type 0
-        Assert.AreEqual(1, taken.Count);
-        Assert.AreEqual(0, taken.ItemId);
+        Assert.That(taken.Count, Is.EqualTo(1));
+        Assert.That(taken.ItemId, Is.EqualTo(0));
     }
 
     [Test]
@@ -40,15 +40,15 @@ public class Boxes
         box.TryStore(0, 10);
         var taken = box.Take(0, 2);
         // taken must be 2 of the type 0
-        Assert.AreEqual(2, taken.Count);
-        Assert.AreEqual(0, taken.ItemId);
+        Assert.That(taken.Count, Is.EqualTo(2));
+        Assert.That(taken.ItemId, Is.EqualTo(0));
     }
     [Test]
     public void AddThenGetByIndexer()
     {
         var box = new Box();
         box.TryStore(0, 1);
-        Assert.AreEqual(1, box[0]);
+        Assert.That(box[0], Is.EqualTo(1));
     }
 
     [Test]
@@ -58,13 +58,13 @@ public class Boxes
         var added = box.TryStore(1, 20);
         // The box must be empty
         Assert.IsFalse(added);
-        Assert.AreEqual(0, box.UsedCapacity);
+        Assert.That(box.UsedCapacity, Is.EqualTo(0));
 
         // Use reflection to get the items field and check if it is empty
         var itemsField = typeof(Box).GetField("items", BindingFlags.Instance | BindingFlags.NonPublic);
         var items = (Dictionary<int, int>)itemsField!.GetValue(box)!;
         // We don't know whether the items dictionary is empty or not, but the sum of the values must be 0
-        Assert.AreEqual(0, items.Sum(i => i.Value));
+        Assert.That(items.Sum(i => i.Value), Is.EqualTo(0));
     }
 
     [Test]
@@ -79,12 +79,12 @@ public class Boxes
     {
         var box = new Box { Capacity = 10 };
         box.TryStore(1, 1);
-        Assert.AreEqual(9, box.FreeCapacity);
-        Assert.AreEqual(1, box.UsedCapacity);
+        Assert.That(box.FreeCapacity, Is.EqualTo(9));
+        Assert.That(box.UsedCapacity, Is.EqualTo(1));
 
         box.TryStore(1, 2);
-        Assert.AreEqual(7, box.FreeCapacity);
-        Assert.AreEqual(3, box.UsedCapacity);
+        Assert.That(box.FreeCapacity, Is.EqualTo(7));
+        Assert.That(box.UsedCapacity, Is.EqualTo(3));
     }
 
     [Test]
@@ -96,7 +96,7 @@ public class Boxes
     [Test]
     public void RemovingMultipleItemsNotEnoughItemsToRemove()
     {
-        var box = new Box{Capacity = 10};
+        var box = new Box { Capacity = 10 };
         // Add items of two different ids
         box.TryStore(0, 3);
         box.TryStore(1, 3);
@@ -110,10 +110,10 @@ public class Boxes
         var removed = box.TryRemoveItems(items);
 
         // removed must be false
-        Assert.AreEqual(false, removed);
+        Assert.IsFalse(removed);
         // the new content must be the same as before
-        Assert.AreEqual(3, box[0]);
-        Assert.AreEqual(3, box[1]);
+        Assert.That(box[0], Is.EqualTo(3));
+        Assert.That(box[1], Is.EqualTo(3));
     }
 
     [Test]
@@ -133,10 +133,10 @@ public class Boxes
         var removed = box.TryRemoveItems(items);
 
         // removed must be true
-        Assert.AreEqual(true, removed);
+        Assert.IsTrue(removed);
         // the new content must be 2 of the type 0 and 1 of the type 1
-        Assert.AreEqual(2, box[0]);
-        Assert.AreEqual(1, box[1]);
+        Assert.That(box[0], Is.EqualTo(2));
+        Assert.That(box[1], Is.EqualTo(1));
     }
 
     [Test]
@@ -147,9 +147,9 @@ public class Boxes
         // Store 20 items of type 0
         box.TryStoreAsMuchAsPossible(0, 20);
         // Check content
-        Assert.AreEqual(20, box[0]);
-        Assert.AreEqual(20, box.UsedCapacity);
-        Assert.AreEqual(80, box.FreeCapacity);
+        Assert.That(box[0], Is.EqualTo(20));
+        Assert.That(box.UsedCapacity, Is.EqualTo(20));
+        Assert.That(box.FreeCapacity, Is.EqualTo(80));
     }
 
     [Test]
@@ -160,9 +160,9 @@ public class Boxes
         // Store 20 items of type 0
         box.TryStoreAsMuchAsPossible(0, 20);
         // Check content
-        Assert.AreEqual(10, box[0]);
-        Assert.AreEqual(10, box.UsedCapacity);
-        Assert.AreEqual(0, box.FreeCapacity);
+        Assert.That(box[0], Is.EqualTo(10));
+        Assert.That(box.UsedCapacity, Is.EqualTo(10));
+        Assert.That(box.FreeCapacity, Is.EqualTo(0));
     }
 
     [Test]
@@ -178,9 +178,9 @@ public class Boxes
         // store the items
         var added = box.TryStore(items);
         // added must be false
-        Assert.AreEqual(false, added);
+        Assert.IsFalse(added);
         // the box must be emtpty
-        Assert.AreEqual(0, box.UsedCapacity);
+        Assert.That(box.UsedCapacity, Is.EqualTo(0));
     }
 
     [Test]
@@ -196,10 +196,10 @@ public class Boxes
         // store the items
         var added = box.TryStore(items);
         // added must be true
-        Assert.AreEqual(true, added);
+        Assert.IsTrue(added);
         // the new content must be 1 of the type 0 and 2 of the type 1
-        Assert.AreEqual(1, box[0]);
-        Assert.AreEqual(2, box[1]);
+        Assert.That(box[0], Is.EqualTo(1));
+        Assert.That(box[1], Is.EqualTo(2));
     }
 
     [Test]
@@ -210,19 +210,19 @@ public class Boxes
         box.TryStore(0, 3);
         box.TryStore(1, 3);
         // Check content
-        Assert.AreEqual(3, box[0]);
-        Assert.AreEqual(3, box[1]);
+        Assert.That(box[0], Is.EqualTo(3));
+        Assert.That(box[1], Is.EqualTo(3));
 
         // Take items of one type
         var taken = box.Take(0, 1);
         // Check content
-        Assert.AreEqual(2, box[0]);
-        Assert.AreEqual(3, box[1]);
+        Assert.That(box[0], Is.EqualTo(2));
+        Assert.That(box[1], Is.EqualTo(3));
 
         // Take items of another type
         taken = box.Take(1, 2);
         // Check content
-        Assert.AreEqual(2, box[0]);
-        Assert.AreEqual(1, box[1]);
+        Assert.That(box[0], Is.EqualTo(2));
+        Assert.That(box[1], Is.EqualTo(1));
     }
 }

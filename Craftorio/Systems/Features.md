@@ -14,6 +14,7 @@ The logistics network is a network of nodes and carriers.
 - **CarrierExecuteSystem**: This system is responsible for determining the behavior of the carriers.
 - **MovingObjectSystem**: This system is responsible for moving the carriers.
 - **TimeConsumingSystem**: Bases require time to let the carriers out.
+- **BaseNodeCarrierCreationSystem**: This system is responsible for creating the carriers for the nodes.
 
 # Information
 The player must be able to see information about the game, this information should be processed before-hand. Information features does just this.

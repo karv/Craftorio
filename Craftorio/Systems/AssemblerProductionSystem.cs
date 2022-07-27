@@ -37,6 +37,14 @@ public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSyst
             {
                 timeConsumption.Reset();
                 World.Publish(new ProductionCompleted(entity));
+                
+                // Take the resources from the input box.
+                var inputBox = entity.Get<ITakeableBox>();
+                if (!inputBox.TryRemoveItems(recipe.Inputs))
+                {
+                    timeConsumption.ProductionState = ProductionState.WaitingForResources;
+                    World.Publish(new ProductionStateChanged(entity));
+                }
             }
             else
             {
