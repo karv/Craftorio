@@ -128,11 +128,12 @@ public static class EntityFactory
     /// <param name="requests">If not null, the requested items.</param>
     public static Entity CreateStorageBox(World world, RectangleF location,
     Box? box = null,
-    int[]? requests = null
+    int[]? requests = null,
+    bool isProvider = false
     )
     {
         box ??= new Box();
-        requests ??= new int[0];
+        requests ??= Array.Empty<int>();
         var storageBox = world.CreateEntity();
         storageBox.Set<ITakeableBox>(box);
         storageBox.Set<IStoreBox>(box);
@@ -146,6 +147,11 @@ public static class EntityFactory
         {
             GetText = (Entity entity) => entity.Get<IStoreBox>().DisplayContent()
         });
+        if (isProvider)
+        {
+            // Add provider data, so it can provide items for the network
+            storageBox.Set<Logistic.ProvideData>(new());
+        }
 
         return storageBox;
     }
