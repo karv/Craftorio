@@ -1,1 +1,2 @@
-global using Craftorio;global using NUnit.Framework;
+global using Craftorio;
+global using NUnit.Framework;
