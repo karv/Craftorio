@@ -44,8 +44,8 @@ public class LogisticNetworkFeature
             system.Update(deltaTime);
 
         // The requester should have received the item, and the provider should be empty.
-        Assert.AreEqual(1, reqBox[1]);
-        Assert.AreEqual(0, proBox[1]);
+        Assert.That(reqBox[1], Is.EqualTo(1));
+        Assert.That(proBox[1], Is.EqualTo(0));
     }
 
     [Test]

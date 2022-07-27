@@ -68,8 +68,8 @@ public class ItemProductionChain
         // - Miner1 should have mined 7 items
         // - Miner2 should have mined 10 items
 
-        Assert.AreEqual(5, ent0.Get<ITakeableBox>()[1]);
-        Assert.AreEqual(7, ent1.Get<ITakeableBox>()[1]);
-        Assert.AreEqual(10, ent2.Get<ITakeableBox>()[1]);
+        Assert.That(ent0.Get<ITakeableBox>()[1], Is.EqualTo(5));
+        Assert.That(ent1.Get<ITakeableBox>()[1], Is.EqualTo(7));
+        Assert.That(ent2.Get<ITakeableBox>()[1], Is.EqualTo(10));
     }
 }
