@@ -58,14 +58,25 @@ public static class EntityFactory
     /// </summary>
     /// <param name="world">ECS world.</param>
     /// <param name="location">Location of the entity.</param>
+    /// <param name="network">The network where this base belong.</param>
     /// <returns>The created entity.</returns>
-    public static Entity CreateBase(World world, RectangleF location)
+    public static Entity CreateBase(World world, RectangleF location, LogisticNetwork network)
     {
         var baseEntity = world.CreateEntity();
         baseEntity.Set(new Location(location));
-        baseEntity.Set<Logistic.NodeBase>();
+        baseEntity.Set<Logistic.NodeBase>(new NodeBase
+        {
+            Capacity = 10,
+            OrdersQueue = new Queue<LogisticOrder>(),
+            Network = network
+        });
         baseEntity.Set(new Drawing.Sprite { Color = Color.White });
-
+        baseEntity.Set(new TimeConsumption
+        {
+            Cost = 1000,
+            Speed = 1,
+            ProductionState = ProductionState.Working
+        });
         baseEntity.Set(new Drawing.UI.MouseOverDisplayText
         {
             Text = "Just a base"
