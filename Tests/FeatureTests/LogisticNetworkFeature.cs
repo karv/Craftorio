@@ -1,7 +1,10 @@
 namespace Test;
-// Tests covering the logistic network feature.
 using DefaultEcs;
+using MonoGame.Extended;
 
+/// <summary>
+/// Tests covering the logistic network feature.
+/// </summary>
 public class LogisticNetworkFeature
 {
     private readonly Craftorio.Logistic.LogisticNetwork logisticNetwork;
@@ -19,7 +22,6 @@ public class LogisticNetworkFeature
         );
         logisticNetwork = new(world);
     }
-
     [Test]
     public void BasicRequestedItemTransport()
     {
@@ -39,11 +41,54 @@ public class LogisticNetworkFeature
         // Run for 5 seconds at 60fps
         const int deltaTime = 1000 / 60;
         for (int i = 0; i < 5 * 60; i++)
-        {
             system.Update(deltaTime);
-        }
+
         // The requester should have received the item, and the provider should be empty.
         Assert.AreEqual(1, reqBox[1]);
         Assert.AreEqual(0, proBox[1]);
+    }
+
+    [Test]
+    public void NoProvidersWillNotCreateCarrier()
+    {
+        // Add a base and a requester
+        var baseNode = EntityFactory.CreateBase(world, new RectangleF(0, 0, 1, 1), logisticNetwork);
+        var requester = EntityFactory.CreateStorageBox(world, new RectangleF(0, 0, 1, 1),
+        requests: new[] { 1 });
+        // Subscribe: if any carrier is created, fail the test.
+        world.Subscribe<Craftorio.Logistic.CarrierCreated>(AssertNoCarrierCreated);
+        // Run for 5 seconds at 60fps
+        const int deltaTime = 1000 / 60;
+        for (int i = 0; i < 5 * 60; i++)
+            system.Update(deltaTime);
+        Assert.Pass();
+
+        static void AssertNoCarrierCreated(in Craftorio.Logistic.CarrierCreated e)
+        {
+            Assert.Fail();
+        }
+    }
+    [Test]
+    public void NoRequestersWillNotCreateCarrier()
+    {
+        // Add a base and a provider
+        var proBox = new Box();
+        proBox.TryStore(1, 1);
+        var provider = EntityFactory.CreateStorageBox(world, new MonoGame.Extended.RectangleF(0, 0, 10, 10),
+            box: proBox,
+            isProvider: true);
+        var baseNode = EntityFactory.CreateBase(world, new RectangleF(0, 0, 1, 1), logisticNetwork);
+        // Subscribe: if any carrier is created, fail the test.
+        world.Subscribe<Craftorio.Logistic.CarrierCreated>(AssertNoCarrierCreated);
+        // Run for 5 seconds at 60fps
+        const int deltaTime = 1000 / 60;
+        for (int i = 0; i < 5 * 60; i++)
+            system.Update(deltaTime);
+        Assert.Pass();
+
+        static void AssertNoCarrierCreated(in Craftorio.Logistic.CarrierCreated e)
+        {
+            Assert.Fail();
+        }
     }
 }
