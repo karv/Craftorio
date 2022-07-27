@@ -74,7 +74,7 @@ public class Game : Microsoft.Xna.Framework.Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        updateSystem.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
+        updateSystem!.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
     }
 
     private void InitializeSystems()

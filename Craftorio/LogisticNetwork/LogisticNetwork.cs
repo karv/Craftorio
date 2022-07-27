@@ -52,6 +52,10 @@ public class LogisticNetwork
     /// </summary>
     public World World { get; }
 
+    /// <summary>
+    /// For each order, assign it to a base node.
+    /// Currently thr assignation is by closest base node.
+    /// </summary>
     public void AssignOrders()
     {
         // Take elements from the order queue and assign them to a base node which is closest to the provider entity.

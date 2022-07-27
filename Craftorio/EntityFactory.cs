@@ -58,6 +58,7 @@ public static class EntityFactory
     /// </summary>
     /// <param name="world">ECS world.</param>
     /// <param name="location">Location of the entity.</param>
+    /// <param name="network">The network where this base belong.</param>
     /// <returns>The created entity.</returns>
     public static Entity CreateBase(World world, RectangleF location, LogisticNetwork network)
     {
