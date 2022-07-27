@@ -2,8 +2,14 @@ namespace Craftorio.Logistic;
 using DefaultEcs.System;
 using Production;
 
+/// <summary>
+/// This system creates carriers nodes for every base node that requires.
+/// </summary>
 public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseNodeCarrierCreationSystem"/> class.
+    /// </summary>
     public BaseNodeCarrierCreationSystem(World world) : base(world.GetEntities()
         .With<NodeBase>()
         .With<TimeConsumption>()
@@ -12,6 +18,9 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
     {
     }
 
+    /// <summary>
+    /// Updates a specified node base entity. If this entity requires a carrier node, it will be created.
+    /// </summary>
     protected override void Update(int state, in Entity entity)
     {
         ref var timer = ref entity.Get<TimeConsumption>();
