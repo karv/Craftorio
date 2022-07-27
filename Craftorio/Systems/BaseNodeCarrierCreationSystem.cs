@@ -41,7 +41,7 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
             if (order.Amount == 1)
                 nodeBase.OrdersQueue.Dequeue();
 
-            var carrier = CreateCarrier(order, nodeBase.Network, location.AsVector, entity);
+            var carrier = CreateCarrier(order, nodeBase.Network, location.Bounds, entity);
         }
         else
             nodeBase.Network.AssignOrders();
@@ -50,11 +50,11 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
         timer.Reset();
     }
 
-    private Entity CreateCarrier(LogisticOrder order, LogisticNetwork network, Vector2 location, Entity baseNode)
+    private Entity CreateCarrier(LogisticOrder order, LogisticNetwork network, RectangleF location, Entity baseNode)
     {
         var carrier = World.CreateEntity();
         // Put it somewhere, at the origin for now
-        carrier.Set<Location>(new Location { AsVector = location });
+        carrier.Set<Location>(new Location  (location) );
         carrier.Set(new CarrierData
         {
             Order = order,
@@ -66,6 +66,10 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
         {
             MoveSpeed = network.CarriersSpeed,
             TargetEntity = order.SourceNode
+        });
+        carrier.Set(new Craftorio.Drawing.Sprite
+        {
+            Color = Color.YellowGreen
         });
         World.Publish(new CarrierCreated { Carrier = carrier, BaseNode = baseNode });
         return carrier;
