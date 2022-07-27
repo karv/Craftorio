@@ -53,7 +53,10 @@ public class Game : Microsoft.Xna.Framework.Game
         camera.LookAt(new(0, 0));
         World.Set(camera);
         SetupInitialState(World);
-
+        // Listen to carrier created events
+        World.Subscribe<Logistic.CarrierCreated>(When);
+        //World.Subscribe<Production.ProductionCompleted>(When);
+        //World.Subscribe<Production.ProductionStateChanged>(When);
     }
 
     /// <summary>
@@ -72,7 +75,6 @@ public class Game : Microsoft.Xna.Framework.Game
             Exit();
 
         updateSystem!.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
-        network.Update();
     }
 
     private void InitializeSystems()
@@ -82,9 +84,11 @@ public class Game : Microsoft.Xna.Framework.Game
             new Production.MiningSystem(World),
             new MovingObjectSystem(World),
             new Production.AssemblerProductionSystem(World),
+            new Logistic.BaseNodeCarrierCreationSystem(World),
             new Logistic.CarrierExecuteSystem(World),
             new Drawing.UI.DisplayTextGenerator(World) { Font = Content.Load<SpriteFont>("Fonts/Default") }
         );
+
         drawSystem = new DefaultEcs.System.SequentialSystem<int>(
             new Drawing.SpriteDrawing(World, GraphicsDevice),
             new Drawing.TextDrawing(World, GraphicsDevice)
@@ -103,7 +107,7 @@ public class Game : Microsoft.Xna.Framework.Game
         EntityFactory.CreateStorageBox(World, new(100, 100, 20, 20), requests: new[] { 1, 2 });
 
         // A node so things work
-        EntityFactory.CreateBase(World, new(0, 0, 20, 20));
+        EntityFactory.CreateBase(World, new(0, 0, 20, 20), network);
 
         // An assembler that transforms itemId 1 to itemId 5 every 1 second
         var recipe = new Production.Recipe
@@ -132,7 +136,7 @@ public class Game : Microsoft.Xna.Framework.Game
     {
         var data = msg.Carrier.Get<Logistic.CarrierData>();
 
-        Console.WriteLine($"Carrier created: {msg.Carrier}. {data.Order}");
+        Console.WriteLine($"Carrier created: {msg.Carrier}. {data.Order} by {msg.BaseNode}");
     }
 
     private void When(in Production.ProductionCompleted msg)
