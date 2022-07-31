@@ -12,19 +12,6 @@ public class LogisticNetworkFeature
     private DefaultEcs.System.ISystem<int> system;
     private World world;
 
-    [SetUp]
-    public void SetUp()
-    {
-        world = new();
-        system = new DefaultEcs.System.SequentialSystem<int>(
-            new Craftorio.Logistic.CarrierExecuteSystem(world),
-            new Craftorio.MovingObjectSystem(world),
-            new Craftorio.Logistic.BaseNodeCarrierCreationSystem(world),
-            new Craftorio.Production.TimeConsumingSystem(world)
-        );
-        logisticNetwork = new(world);
-    }
-
     [Test]
     public void BasicRequestedItemTransport()
     {
@@ -91,5 +78,18 @@ public class LogisticNetworkFeature
         {
             Assert.Fail();
         }
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
+        world = new();
+        system = new DefaultEcs.System.SequentialSystem<int>(
+            new Craftorio.Logistic.CarrierExecuteSystem(world),
+            new Craftorio.MovingObjectSystem(world),
+            new Craftorio.Logistic.BaseNodeCarrierCreationSystem(world),
+            new Craftorio.Production.TimeConsumingSystem(world)
+        );
+        logisticNetwork = new(world);
     }
 }
