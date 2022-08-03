@@ -53,10 +53,6 @@ public class Game : Microsoft.Xna.Framework.Game
         camera.LookAt(new(0, 0));
         World.Set(camera);
         SetupInitialState(World);
-        // Listen to carrier created events
-        World.Subscribe<Logistic.CarrierCreated>(When);
-        //World.Subscribe<Production.ProductionCompleted>(When);
-        //World.Subscribe<Production.ProductionStateChanged>(When);
     }
 
     /// <summary>
@@ -104,7 +100,7 @@ public class Game : Microsoft.Xna.Framework.Game
         EntityFactory.CreateMiner(World, new(40, 20, 20, 20), Cost: 1000, Speed: 2f, ItemId: 4);
 
         // Add a box that ask for item 1 and 2
-        EntityFactory.CreateStorageBox(World, new(100, 100, 20, 20), requests: new[] { 1, 2 });
+        EntityFactory.CreateStorageBox(World, new(100, 100, 20, 20), requests: new[] { 2, 3, 4, 5 });
 
         // A node so things work
         EntityFactory.CreateBase(World, new(0, 0, 20, 20), network);
@@ -112,17 +108,18 @@ public class Game : Microsoft.Xna.Framework.Game
         // An assembler that transforms itemId 1 to itemId 5 every 1 second
         var recipe = new Production.Recipe
         {
-            BaseTime = 1000,
+            BaseTime = 3000,
             Inputs = new ItemStack[] { new ItemStack { ItemId = 1, Count = 1 } },
             Outputs = new ItemStack[] { new ItemStack { ItemId = 5, Count = 1 } }
         };
-        var asm = EntityFactory.CreateAssembler(World, new(-100, 100, 20, 20), recipe, includeLogisticSupport: true);
+        var asm = EntityFactory.CreateAssembler(World, new(-100, 100, 20, 20), recipe,
+            includeLogisticSupport: true);
 
-        // Listen to carrier created events
-        World.Subscribe<Logistic.CarrierCreated>(When);
+
+        // Listen to events
+        // World.Subscribe<Logistic.CarrierCreated>(When);
         World.Subscribe<Production.ProductionCompleted>(When);
         World.Subscribe<Production.ProductionStateChanged>(When);
-
     }
 
     private void SetupServices()

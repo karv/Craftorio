@@ -46,8 +46,14 @@ public static class EntityFactory
         assembler.Set(new Drawing.Sprite { Color = Color.Red });
         assembler.Set(new Drawing.UI.MouseOverDisplayText
         {
-            GetText = (Entity entity) => $"{entity.Get<RecipeComponent>().Outputs[0]}",
+            GetText = GetTooltip
         });
+
+        static string GetTooltip(Entity entity)
+        {
+            var timer = entity.Get<TimeConsumption>();
+            return $"{timer.ProductionState}#{timer.Progress}/{timer.Cost}:{entity.Get<RecipeComponent>().Outputs[0].Count}";
+        }
 
         return assembler;
     }
