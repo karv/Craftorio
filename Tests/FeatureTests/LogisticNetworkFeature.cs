@@ -5,23 +5,13 @@ using MonoGame.Extended;
 /// <summary>
 /// Tests covering the logistic network feature.
 /// </summary>
+[TestFixture]
 public class LogisticNetworkFeature
 {
-    private readonly Craftorio.Logistic.LogisticNetwork logisticNetwork;
-    private readonly DefaultEcs.System.ISystem<int> system;
-    private readonly World world;
+    private Craftorio.Logistic.LogisticNetwork logisticNetwork;
+    private DefaultEcs.System.ISystem<int> system;
+    private World world;
 
-    public LogisticNetworkFeature()
-    {
-        world = new();
-        system = new DefaultEcs.System.SequentialSystem<int>(
-            new Craftorio.Logistic.CarrierExecuteSystem(world),
-            new Craftorio.MovingObjectSystem(world),
-            new Craftorio.Logistic.BaseNodeCarrierCreationSystem(world),
-            new Craftorio.Production.TimeConsumingSystem(world)
-        );
-        logisticNetwork = new(world);
-    }
     [Test]
     public void BasicRequestedItemTransport()
     {
@@ -61,7 +51,6 @@ public class LogisticNetworkFeature
         const int deltaTime = 1000 / 60;
         for (int i = 0; i < 5 * 60; i++)
             system.Update(deltaTime);
-        Assert.Pass();
 
         static void AssertNoCarrierCreated(in Craftorio.Logistic.CarrierCreated e)
         {
@@ -84,11 +73,23 @@ public class LogisticNetworkFeature
         const int deltaTime = 1000 / 60;
         for (int i = 0; i < 5 * 60; i++)
             system.Update(deltaTime);
-        Assert.Pass();
 
         static void AssertNoCarrierCreated(in Craftorio.Logistic.CarrierCreated e)
         {
             Assert.Fail();
         }
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
+        world = new();
+        system = new DefaultEcs.System.SequentialSystem<int>(
+            new Craftorio.Logistic.CarrierExecuteSystem(world),
+            new Craftorio.MovingObjectSystem(world),
+            new Craftorio.Logistic.BaseNodeCarrierCreationSystem(world),
+            new Craftorio.Production.TimeConsumingSystem(world)
+        );
+        logisticNetwork = new(world);
     }
 }

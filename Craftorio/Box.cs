@@ -4,7 +4,7 @@ namespace Craftorio;
 /// Represents an API interface for a box.
 /// Items are stored in a dictionary, where the key is the item's id and the value is the item's quantity.
 /// </summary>
-public class Box : IStoreBox, ITakeableBox
+public class Box : IBox
 {
     private const int DefaultCapacity = 10;
 
