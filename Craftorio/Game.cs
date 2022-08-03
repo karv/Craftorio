@@ -12,6 +12,8 @@ public class Game : Microsoft.Xna.Framework.Game
     private Logistic.LogisticNetwork network;
     private DefaultEcs.System.ISystem<int>? updateSystem;
 
+    private UpsMeter upsMeter;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Game"/> class.
     /// </summary>
@@ -38,7 +40,6 @@ public class Game : Microsoft.Xna.Framework.Game
         GraphicsDevice.Clear(Color.DimGray);
         drawSystem!.Update(gameTime.ElapsedGameTime.Milliseconds);
     }
-
     /// <summary>
     /// Initialize the game.
     /// </summary>
@@ -46,6 +47,7 @@ public class Game : Microsoft.Xna.Framework.Game
     {
         SetupServices();
         base.Initialize();
+        upsMeter = Services.GetService<UpsMeter>();
         InitializeSystems();
 
         // Set the camera
@@ -71,6 +73,7 @@ public class Game : Microsoft.Xna.Framework.Game
             Exit();
 
         updateSystem!.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
+        upsMeter.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
     }
 
     private void InitializeSystems()
@@ -87,7 +90,8 @@ public class Game : Microsoft.Xna.Framework.Game
 
         drawSystem = new DefaultEcs.System.SequentialSystem<int>(
             new Drawing.SpriteDrawing(World, GraphicsDevice),
-            new Drawing.TextDrawing(World, GraphicsDevice)
+            new Drawing.TextDrawing(World, GraphicsDevice),
+            new Drawing.UI.DisplayUps(this) // as debug, draw the fps.
         );
     }
 
@@ -115,7 +119,6 @@ public class Game : Microsoft.Xna.Framework.Game
         var asm = EntityFactory.CreateAssembler(World, new(-100, 100, 20, 20), recipe,
             includeLogisticSupport: true);
 
-
         // Listen to events
         // World.Subscribe<Logistic.CarrierCreated>(When);
         World.Subscribe<Production.ProductionCompleted>(When);
@@ -124,6 +127,7 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void SetupServices()
     {
+        Services.AddService<UpsMeter>(new UpsMeter { Weight = 0.1f });
     }
 
     private void When(in Logistic.CarrierCreated msg)
