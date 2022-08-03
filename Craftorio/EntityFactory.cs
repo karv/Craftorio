@@ -24,8 +24,7 @@ public static class EntityFactory
         Box iBox = new();
         Box oBox = new();
         var assembler = world.CreateEntity();
-        assembler.Set<IStoreBox>(iBox);
-        assembler.Set<ITakeableBox>(oBox);
+        assembler.Set<IBox>(iBox);
         assembler.Set<TimeConsumption>(new TimeConsumption
         {
             Cost = recipe.BaseTime,
@@ -47,8 +46,14 @@ public static class EntityFactory
         assembler.Set(new Drawing.Sprite { Color = Color.Red });
         assembler.Set(new Drawing.UI.MouseOverDisplayText
         {
-            GetText = (Entity entity) => $"{entity.Get<RecipeComponent>().Outputs[0]}",
+            GetText = GetTooltip
         });
+
+        static string GetTooltip(Entity entity)
+        {
+            var timer = entity.Get<TimeConsumption>();
+            return $"{timer.ProductionState}#{timer.Progress}/{timer.Cost}:{entity.Get<RecipeComponent>().Outputs[0].Count}";
+        }
 
         return assembler;
     }
@@ -101,7 +106,7 @@ public static class EntityFactory
         var box = new Box();
         var miner = world.CreateEntity();
         var pData = new Logistic.ProvideData();
-        miner.Set<ITakeableBox>(box);
+        miner.Set<IBox>(box);
         miner.Set<Production.TimeConsumption>(new Production.TimeConsumption
         {
             Cost = Cost,
@@ -136,8 +141,7 @@ public static class EntityFactory
         box ??= new Box();
         requests ??= Array.Empty<int>();
         var storageBox = world.CreateEntity();
-        storageBox.Set<ITakeableBox>(box);
-        storageBox.Set<IStoreBox>(box);
+        storageBox.Set<IBox>(box);
         var req = new Logistic.RequestData();
         foreach (var item in requests)
             req.AddRequest(item, int.MaxValue);
@@ -146,7 +150,7 @@ public static class EntityFactory
         storageBox.Set(new Drawing.Sprite { Color = Color.Yellow });
         storageBox.Set(new Drawing.UI.MouseOverDisplayText
         {
-            GetText = (Entity entity) => entity.Get<IStoreBox>().DisplayContent()
+            GetText = (Entity entity) => entity.Get<IBox>().DisplayContent()
         });
         if (isProvider)
         {

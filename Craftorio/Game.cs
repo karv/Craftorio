@@ -53,10 +53,6 @@ public class Game : Microsoft.Xna.Framework.Game
         camera.LookAt(new(0, 0));
         World.Set(camera);
         SetupInitialState(World);
-        // Listen to carrier created events
-        World.Subscribe<Logistic.CarrierCreated>(When);
-        //World.Subscribe<Production.ProductionCompleted>(When);
-        //World.Subscribe<Production.ProductionStateChanged>(When);
     }
 
     /// <summary>
@@ -112,20 +108,18 @@ public class Game : Microsoft.Xna.Framework.Game
         // An assembler that transforms itemId 1 to itemId 5 every 1 second
         var recipe = new Production.Recipe
         {
-            BaseTime = 1000,
+            BaseTime = 3000,
             Inputs = new ItemStack[] { new ItemStack { ItemId = 1, Count = 1 } },
             Outputs = new ItemStack[] { new ItemStack { ItemId = 5, Count = 1 } }
         };
-        var asm = EntityFactory.CreateAssembler(World, new(-100, 100, 20, 20), recipe, includeLogisticSupport: true);
-        // Add some items to the assembler
-        Box box = (Box)asm.Get<ITakeableBox>();
-        box.TryStore(1, 10);
+        var asm = EntityFactory.CreateAssembler(World, new(-100, 100, 20, 20), recipe,
+            includeLogisticSupport: true);
 
-        // Listen to carrier created events
-        World.Subscribe<Logistic.CarrierCreated>(When);
+
+        // Listen to events
+        // World.Subscribe<Logistic.CarrierCreated>(When);
         World.Subscribe<Production.ProductionCompleted>(When);
         World.Subscribe<Production.ProductionStateChanged>(When);
-
     }
 
     private void SetupServices()
@@ -141,7 +135,7 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void When(in Production.ProductionCompleted msg)
     {
-        var box = msg.ProducerEntity.Get<IStoreBox>();
+        var box = msg.ProducerEntity.Get<IBox>();
         Console.WriteLine($"Production completed by: {msg.ProducerEntity}. Current box content: {box.DisplayContent()}");
     }
 

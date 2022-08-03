@@ -10,8 +10,7 @@ public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSyst
     /// </summary>
     public AssemblerProductionSystem(World world) :
     base(world.GetEntities()
-        .With<IStoreBox>()  // To take the resources from
-        .With<ITakeableBox>() // To put the resources into
+        .With<IBox>()            // To take the resources from/to
         .With<TimeConsumption>() // To consume the time
         .With<RecipeComponent>() // The recipe to use
         .AsSet())
@@ -29,7 +28,7 @@ public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSyst
         {
             // The entity has finished its time consumption.
             // If there is space in the output box, reset the TimeConsumption component, and put a new item of the mining type onto the output box.
-            var outputBox = entity.Get<IStoreBox>();
+            var outputBox = entity.Get<IBox>();
 
             // If there is space in the output box, reset the TimeConsumption component
             // and put a new item of the output of the recipe type onto the output box.
@@ -37,9 +36,9 @@ public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSyst
             {
                 timeConsumption.Reset();
                 World.Publish(new ProductionCompleted(entity));
-                
+
                 // Take the resources from the input box.
-                var inputBox = entity.Get<ITakeableBox>();
+                var inputBox = entity.Get<IBox>();
                 if (!inputBox.TryRemoveItems(recipe.Inputs))
                 {
                     timeConsumption.ProductionState = ProductionState.WaitingForResources;
@@ -61,7 +60,7 @@ public sealed class AssemblerProductionSystem : DefaultEcs.System.AEntitySetSyst
         {
             // Waiting for the entity to get the required resources
             // If the entity has the required resources, start working
-            var inputBox = entity.Get<ITakeableBox>();
+            var inputBox = entity.Get<IBox>();
             if (inputBox.TryRemoveItems(recipe.Inputs))
             {
                 timeConsumption.ProductionState = ProductionState.Working;

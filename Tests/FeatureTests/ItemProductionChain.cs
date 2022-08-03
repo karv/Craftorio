@@ -33,7 +33,7 @@ public class ItemProductionChain
         };
         var ent0 = EntityFactory.CreateAssembler(world, new MonoGame.Extended.RectangleF(0, 0, 100, 100), recipe);
         // Add some materials to the assembler.
-        Box input = (Box)ent0.Get<ITakeableBox>();
+        Box input = (Box)ent0.Get<IBox>();
         input.TryStore(0, 10);
 
         for (int i = 0; i < iterations; i++)
@@ -41,7 +41,7 @@ public class ItemProductionChain
 
         // All materials should be consumed, and the output should be produced.
         Assert.That(input[0], Is.EqualTo(0));
-        Box output = (Box)ent0.Get<IStoreBox>();
+        Box output = (Box)ent0.Get<IBox>();
         Assert.That(output[1], Is.EqualTo(10));
 
         // the production state of the assembler should be "waiting for resources" again.
@@ -68,8 +68,8 @@ public class ItemProductionChain
         // - Miner1 should have mined 7 items
         // - Miner2 should have mined 10 items
 
-        Assert.That(ent0.Get<ITakeableBox>()[1], Is.EqualTo(5));
-        Assert.That(ent1.Get<ITakeableBox>()[1], Is.EqualTo(7));
-        Assert.That(ent2.Get<ITakeableBox>()[1], Is.EqualTo(10));
+        Assert.That(ent0.Get<IBox>()[1], Is.EqualTo(5));
+        Assert.That(ent1.Get<IBox>()[1], Is.EqualTo(7));
+        Assert.That(ent2.Get<IBox>()[1], Is.EqualTo(10));
     }
 }
