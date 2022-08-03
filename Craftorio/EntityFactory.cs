@@ -67,7 +67,7 @@ public static class EntityFactory
         baseEntity.Set<Logistic.NodeBase>(new NodeBase
         {
             Capacity = 10,
-            OrdersQueue = new Queue<LogisticOrder>(),
+            OrdersQueue = new CE.Collections.Queue<LogisticOrder>(),
             Network = network
         });
         baseEntity.Set(new Drawing.Sprite { Color = Color.White });

@@ -59,8 +59,9 @@ public class LogisticNetwork
     public void AssignOrders()
     {
         // Take elements from the order queue and assign them to a base node which is closest to the provider entity.
-        foreach (var order in logisticOrdersQueue)
+        while (logisticOrdersQueue.Count > 0)
         {
+            var order = logisticOrdersQueue.Dequeue();
             var provider = order.SourceNode;
             var providerLocation = provider.Get<Location>().AsVector;
             Entity closestNode;

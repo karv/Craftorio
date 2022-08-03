@@ -104,7 +104,7 @@ public class Game : Microsoft.Xna.Framework.Game
         EntityFactory.CreateMiner(World, new(40, 20, 20, 20), Cost: 1000, Speed: 2f, ItemId: 4);
 
         // Add a box that ask for item 1 and 2
-        EntityFactory.CreateStorageBox(World, new(100, 100, 20, 20), requests: new[] { 1, 2 });
+        EntityFactory.CreateStorageBox(World, new(100, 100, 20, 20), requests: new[] { 2, 3, 4, 5 });
 
         // A node so things work
         EntityFactory.CreateBase(World, new(0, 0, 20, 20), network);

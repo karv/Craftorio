@@ -28,7 +28,7 @@
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CE.Collections" Version="1.5.1" />
+    <PackageReference Include="CE.Collections" Version="1.6" />
     <PackageReference Include="defaultecs" Version="0.17.2" />
     <PackageReference Include="monogame.extended" Version="3.8.0" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
