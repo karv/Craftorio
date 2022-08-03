@@ -12,7 +12,7 @@ public class Game : Microsoft.Xna.Framework.Game
     private Logistic.LogisticNetwork network;
     private DefaultEcs.System.ISystem<int>? updateSystem;
 
-    private UpsMeter upsMeter;
+    private UpsMeter? upsMeter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Game"/> class.
@@ -73,7 +73,7 @@ public class Game : Microsoft.Xna.Framework.Game
             Exit();
 
         updateSystem!.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
-        upsMeter.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
+        upsMeter!.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
     }
 
     private void InitializeSystems()
@@ -127,7 +127,7 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void SetupServices()
     {
-        Services.AddService<UpsMeter>(new UpsMeter { Weight = 0.1f });
+        Services.AddService<UpsMeter>(new UpsMeter { MemoryWeight = 0.1f });
     }
 
     private void When(in Logistic.CarrierCreated msg)
