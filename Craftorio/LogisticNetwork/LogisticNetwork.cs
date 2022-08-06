@@ -75,6 +75,22 @@ public class LogisticNetwork
     }
 
     /// <summary>
+    /// Gets a new list of orders which are ready to be assigned.
+    /// </summary>
+    /// <param name="from">The provider entity.</param>
+    /// <param name="to">The requester entity.</param>
+    /// <returns>A NEW list containing the requested query.</returns>
+    public List<LogisticOrder> GetAllOrdersFromTo(Entity from, Entity to)
+    {
+        var ret = new List<LogisticOrder>();
+        var allOrders = logisticOrdersQueue.ToArray();
+        foreach (var order in allOrders)
+            if (order.SourceNode == from && order.DestinationNode == to)
+                ret.Add(order);
+        return ret;
+    }
+
+    /// <summary>
     /// Fills the orders buffers
     /// </summary>
     public void Rebuff()
@@ -94,6 +110,7 @@ public class LogisticNetwork
             {
                 // Iterate for each provider, to find a provider to form an order.
                 // For now, just pick the first provider that has the requested item.
+
                 foreach (var provider in provideNodes.GetEntities())
                 {
                     // How many items we need to pick up?

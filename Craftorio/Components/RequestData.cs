@@ -64,6 +64,17 @@ public class RequestData
     }
 
     /// <summary>
+    /// Updates the request dictionary of a specified item id, to a specified amount.
+    /// </summary>
+    public void ChangeRequestOf(int itemId, int amount)
+    {
+        if (requestDictionary.TryGetValue(itemId, out var order))
+            requestDictionary[itemId] = amount;
+        else
+            requestDictionary.Add(itemId, amount);
+    }
+
+    /// <summary>
     /// Adds the keys into the dictionary.
     /// </summary>
     [Obsolete("This is now handled automatically. Just remove this method call.")]
