@@ -35,6 +35,6 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Craftorio.Tests" />
+    <InternalsVisibleTo Include="../Tests/Tests.csproj" />
   </ItemGroup>
 </Project>
