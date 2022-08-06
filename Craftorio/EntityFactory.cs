@@ -63,14 +63,19 @@ public static class EntityFactory
     /// <param name="world">ECS world.</param>
     /// <param name="location">Location of the entity.</param>
     /// <param name="network">The network where this base belong.</param>
+    /// <param name="carrierCount"> How many carriers are in this base.</param>
+    /// <param name="carrierDeploySpeed">How fast the carriers are deployed, in carriers per second.</param>
     /// <returns>The created entity.</returns>
-    public static Entity CreateBase(World world, RectangleF location, LogisticNetwork network)
+    public static Entity CreateBase(
+        World world, RectangleF location, LogisticNetwork network, 
+        int carrierCount = 10,
+        float carrierDeploySpeed = 1f)
     {
         var baseEntity = world.CreateEntity();
         baseEntity.Set(new Location(location));
         baseEntity.Set<Logistic.NodeBase>(new NodeBase
         {
-            Capacity = 10,
+            CarrierCount = carrierCount,
             OrdersQueue = new CE.Collections.Queue<LogisticOrder>(),
             Network = network
         });
@@ -78,7 +83,7 @@ public static class EntityFactory
         baseEntity.Set(new TimeConsumption
         {
             Cost = 1000,
-            Speed = 1,
+            Speed = carrierDeploySpeed,
             ProductionState = ProductionState.Working
         });
         baseEntity.Set(new Drawing.UI.MouseOverDisplayText

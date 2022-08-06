@@ -103,7 +103,9 @@ public class Game : Microsoft.Xna.Framework.Game
         EntityFactory.CreateStorageBox(World, new(100, 100, 20, 20), requests: new[] { 2, 3, 4, 5 });
 
         // A node so things work
-        EntityFactory.CreateBase(World, new(0, 0, 20, 20), network);
+        EntityFactory.CreateBase(World, new(0, 0, 20, 20), network,
+            carrierCount: 3,
+            carrierDeploySpeed: 10);
 
         // An assembler that transforms itemId 1 to itemId 5 every 1 second
         var recipe = new Production.Recipe
@@ -114,7 +116,6 @@ public class Game : Microsoft.Xna.Framework.Game
         };
         var asm = EntityFactory.CreateAssembler(World, new(-100, 100, 20, 20), recipe,
             includeLogisticSupport: true);
-
 
         // Listen to events
         // World.Subscribe<Logistic.CarrierCreated>(When);

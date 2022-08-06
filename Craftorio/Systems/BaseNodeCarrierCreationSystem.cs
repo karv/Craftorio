@@ -30,6 +30,11 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
 
         // If the order queue is empty, ask the network to assign orders.
         ref var nodeBase = ref entity.Get<NodeBase>();
+
+        // If no available carriers, return.
+        if (nodeBase.CarrierCount == 0)
+            return;
+
         ref var location = ref entity.Get<Location>();
 
         // Take the first order from the queue, if any,
@@ -45,6 +50,7 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
             else order.Amount--;
 
             var carrier = CreateCarrier(order, nodeBase.Network, location.Bounds, entity);
+            nodeBase.CarrierCount--; // Remove one carrier from the base.
         }
         else
             nodeBase.Network.AssignOrders();

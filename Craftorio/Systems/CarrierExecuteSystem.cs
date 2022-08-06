@@ -125,7 +125,7 @@ public sealed class CarrierExecuteSystem : AEntitySetSystem<int>
         if (distance <= tickDisplacement)
         {
             // Destroy this carrier and increase the available carriers.
-            data.Network.AvailableCarrierCount++;
+            movingObject.TargetEntity.Get<NodeBase>().CarrierCount++;
             destroyingRecords.Record(carrier).Dispose();
         }
     }

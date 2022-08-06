@@ -8,7 +8,7 @@ public record struct NodeBase
     /// <summary>
     /// Capacity of carriers storage.
     /// </summary>
-    public int Capacity;
+    public int CarrierCount;
 
     /// <summary>
     /// the queue of pending orders for the carriers.

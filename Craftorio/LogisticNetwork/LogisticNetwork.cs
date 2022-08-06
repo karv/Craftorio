@@ -38,11 +38,6 @@ public class LogisticNetwork
     }
 
     /// <summary>
-    /// The amount of carriers in the network.
-    /// </summary>
-    public int AvailableCarrierCount { get; set; } = 100;
-
-    /// <summary>
     /// Speed of produced carriers.
     /// </summary>
     public float CarriersSpeed { get; set; } = 1f;
@@ -155,7 +150,7 @@ public class LogisticNetwork
         foreach (var baseNode in nodes)
         {
             // If the positive flag is set, we only want to get bases with positive capacity.
-            if (withPositiveCapacity && baseNode.Get<NodeBase>().Capacity <= 0)
+            if (withPositiveCapacity && baseNode.Get<NodeBase>().CarrierCount <= 0)
                 continue;
 
             var baseLocation = baseNode.Get<Location>().AsVector;
