@@ -34,12 +34,15 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
 
         // Take the first order from the queue, if any,
         // and assign it to the carrier.
-        if (nodeBase.OrdersQueue.TryPeek(out var order))
+        if (nodeBase.OrdersQueue.Count > 0)
         {
+            // required use of ref, because the amount may change during the process.
+            ref var order = ref nodeBase.OrdersQueue.Peek();
             LogisticOrder carrierOrder = order with { Amount = 1 };
 
             if (order.Amount == 1)
                 nodeBase.OrdersQueue.Dequeue();
+            else order.Amount--;
 
             var carrier = CreateCarrier(order, nodeBase.Network, location.Bounds, entity);
         }
@@ -54,7 +57,7 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
     {
         var carrier = World.CreateEntity();
         // Put it somewhere, at the origin for now
-        carrier.Set<Location>(new Location  (location) );
+        carrier.Set<Location>(new Location(location));
         carrier.Set(new CarrierData
         {
             Order = order,

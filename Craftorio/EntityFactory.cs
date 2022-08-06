@@ -21,10 +21,9 @@ public static class EntityFactory
     bool includeLogisticSupport = false,
     float speed = 1f)
     {
-        Box iBox = new();
-        Box oBox = new();
+        Box box = new();
         var assembler = world.CreateEntity();
-        assembler.Set<IBox>(iBox);
+        assembler.Set<IBox>(box);
         assembler.Set<TimeConsumption>(new TimeConsumption
         {
             Cost = recipe.BaseTime,
@@ -72,7 +71,7 @@ public static class EntityFactory
         baseEntity.Set<Logistic.NodeBase>(new NodeBase
         {
             Capacity = 10,
-            OrdersQueue = new Queue<LogisticOrder>(),
+            OrdersQueue = new CE.Collections.Queue<LogisticOrder>(),
             Network = network
         });
         baseEntity.Set(new Drawing.Sprite { Color = Color.White });
@@ -142,10 +141,13 @@ public static class EntityFactory
         requests ??= Array.Empty<int>();
         var storageBox = world.CreateEntity();
         storageBox.Set<IBox>(box);
-        var req = new Logistic.RequestData();
-        foreach (var item in requests)
-            req.AddRequest(item, int.MaxValue);
-        storageBox.Set<Logistic.RequestData>(req);
+        if (requests.Length > 0)
+        {
+            var req = new Logistic.RequestData();
+            foreach (var item in requests)
+                req.AddRequest(item, int.MaxValue);
+            storageBox.Set<Logistic.RequestData>(req);
+        }
         storageBox.Set<Location>(new Location(location));
         storageBox.Set(new Drawing.Sprite { Color = Color.Yellow });
         storageBox.Set(new Drawing.UI.MouseOverDisplayText

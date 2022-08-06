@@ -13,7 +13,7 @@ public record struct NodeBase
     /// <summary>
     /// the queue of pending orders for the carriers.
     /// </summary>
-    public Queue<LogisticOrder> OrdersQueue;
+    public CE.Collections.Queue<LogisticOrder> OrdersQueue;
 
     /// <summary>
     /// The network instance that this base belongs to.
