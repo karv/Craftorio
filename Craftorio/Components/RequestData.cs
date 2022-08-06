@@ -98,6 +98,14 @@ public class RequestData
         return onTheWayOrders.Keys;
     }
 
+    public void ChangeRequestOf (int itemId, int amount)
+    {
+        if (requestDictionary.TryGetValue(itemId, out var order))
+            requestDictionary[itemId] = amount;
+        else
+            requestDictionary.Add(itemId, amount);
+    }
+
     /// <summary>
     /// Gets the amount of requests of the specified item.
     /// </summary>

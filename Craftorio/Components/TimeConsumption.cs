@@ -23,6 +23,8 @@ public record struct TimeConsumption
     /// </value>
     public bool IsCompleted => Progress >= Cost;
 
+    public void Complete () => Progress = Cost;
+
     /// <summary>
     /// Total investment until the process is finished.
     /// </summary>
