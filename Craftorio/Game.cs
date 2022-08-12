@@ -80,7 +80,11 @@ public class Game : Microsoft.Xna.Framework.Game
             new Production.MiningSystem(World),
             new MovingObjectSystem(World),
             new Production.AssemblerProductionSystem(World),
+            new Construction.ConstructorDeploySystem(World),
             new Logistic.BaseNodeCarrierCreationSystem(World),
+            new Construction.ConstructionFinishedSystem(World),
+            new Construction.ConstructionGatherSystem(World),
+            new Construction.ConstructorArriveSystem(World),
             new Logistic.CarrierExecuteSystem(World),
             new Drawing.UI.DisplayTextGenerator(World) { Font = Content.Load<SpriteFont>("Fonts/Default") }
         );
@@ -93,6 +97,33 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void SetupInitialState(World World)
     {
+        // Add something under construction
+        var minerPrototype = new Construction.EntityPrototype();
+        minerPrototype.AddComponent<IBox>(new Box());
+        minerPrototype.AddComponent(new Production.TimeConsumption
+        {
+            Cost = 100,
+            Speed = 1,
+            ProductionState = Production.ProductionState.Working
+        });
+        minerPrototype.AddComponent(new Production.ItemTarget { ItemId = 10 });
+        minerPrototype.AddComponent(new Logistic.ProvideData());
+        minerPrototype.AddComponent(new Drawing.Sprite { Color = Color.DarkOrchid });
+        var constructionMiner = World.CreateEntity();
+        constructionMiner.Set(new Construction.Constructing
+        {
+            Prototype = minerPrototype,
+            RequiredResources = new Dictionary<int, int> { { 1, 1 }, { 2, 1 } },
+            RequiredTime = 5000
+        });
+        constructionMiner.Set(new Location(new(-80, 0, 32, 32)));
+        constructionMiner.Set(new Craftorio.Drawing.Sprite { Color = Color.DarkCyan });
+        constructionMiner.Set<IBox>(new Box());
+        var reqs = new Logistic.RequestData();
+        reqs.AddRequest(1, 1);
+        reqs.AddRequest(2, 1);
+        constructionMiner.Set(reqs);
+
         // Add some miners with different speeds and targets
         EntityFactory.CreateMiner(World, new(-20, 20, 20, 20), Cost: 1000, Speed: 1, ItemId: 1);
         EntityFactory.CreateMiner(World, new(0, 20, 20, 20), Cost: 1000, Speed: 1.3f, ItemId: 2);
@@ -100,11 +131,12 @@ public class Game : Microsoft.Xna.Framework.Game
         EntityFactory.CreateMiner(World, new(40, 20, 20, 20), Cost: 1000, Speed: 2f, ItemId: 4);
 
         // Add a box that ask for item 1 and 2
-        EntityFactory.CreateStorageBox(World, new(100, 100, 20, 20), requests: new[] { 2, 3, 4, 5 });
+        EntityFactory.CreateStorageBox(World, new(100, 100, 20, 20), requests: new int[] { 10 });
 
         // A node so things work
         EntityFactory.CreateBase(World, new(0, 0, 20, 20), network,
             carrierCount: 3,
+            constructorCount: 3,
             carrierDeploySpeed: 10);
 
         // An assembler that transforms itemId 1 to itemId 5 every 1 second
