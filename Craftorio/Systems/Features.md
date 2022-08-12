@@ -25,3 +25,10 @@ The player must be able to see information about the game, this information shou
 Systems responsible to render the entities on the screen. These systems and their main components are located on the `Drawing` namespace.
 - **SpriteDrawing**: Responsible of drawing the sprites.
 - **TextDrawing**: Responsible of drawing the text labels.
+
+# Construction
+Construct new buildings. The following systems are responsible for this:
+- **ConstructionGatherSystem**: Will check the state of any construction entity in the gathering state, to determine if the resources are available so the state can be changed to construction.
+- **ConstructionSystem**: Will check the state of any construction entity in the construction state, to determine if the construction is finished so we create the actual construction entity.
+- **TimeConsumingSystem**: The construction of a building requires time on the construction step.
+- **ConstructorExecuteSystem**: Responsible for leading the constructors from the bases to the construction site.
