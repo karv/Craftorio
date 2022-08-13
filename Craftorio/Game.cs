@@ -98,7 +98,7 @@ public class Game : Microsoft.Xna.Framework.Game
     private void SetupInitialState(World World)
     {
         // Add something under construction
-        var minerPrototype = new Construction.EntityPrototype();
+        var minerPrototype = new EntityPrototype();
         minerPrototype.AddComponent<IBox>(new Box());
         minerPrototype.AddComponent(new Production.TimeConsumption
         {

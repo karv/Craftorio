@@ -1,4 +1,4 @@
-namespace Craftorio.Construction;
+namespace Craftorio;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
