@@ -1,6 +1,6 @@
 namespace Craftorio;
-using Production;
 using Logistic;
+using Production;
 
 /// <summary>
 /// Module that exposes method for commonly used entity types.
@@ -18,8 +18,8 @@ public static class EntityFactory
     /// <param name="speed">the speed multiplier of the assembler</param>
     /// <returns>The created entity.</returns>
     public static Entity CreateAssembler(World world, RectangleF location, Recipe recipe,
-    bool includeLogisticSupport = false,
-    float speed = 1f)
+        bool includeLogisticSupport = false,
+        float speed = 1f)
     {
         Box box = new();
         var assembler = world.CreateEntity();
@@ -64,11 +64,13 @@ public static class EntityFactory
     /// <param name="location">Location of the entity.</param>
     /// <param name="network">The network where this base belong.</param>
     /// <param name="carrierCount"> How many carriers are in this base.</param>
+    /// <param name="constructorCount">How many constructors are in this base.</param>
     /// <param name="carrierDeploySpeed">How fast the carriers are deployed, in carriers per second.</param>
     /// <returns>The created entity.</returns>
     public static Entity CreateBase(
-        World world, RectangleF location, LogisticNetwork network, 
+        World world, RectangleF location, LogisticNetwork network,
         int carrierCount = 10,
+        int constructorCount = 10,
         float carrierDeploySpeed = 1f)
     {
         var baseEntity = world.CreateEntity();
@@ -76,6 +78,7 @@ public static class EntityFactory
         baseEntity.Set<Logistic.NodeBase>(new NodeBase
         {
             CarrierCount = carrierCount,
+            ConstructorCount = constructorCount,
             OrdersQueue = new CE.Collections.Queue<LogisticOrder>(),
             Network = network
         });

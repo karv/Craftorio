@@ -6,9 +6,14 @@ namespace Craftorio.Logistic;
 public record struct NodeBase
 {
     /// <summary>
-    /// Capacity of carriers storage.
+    /// Determines how many carriers are in storage.
     /// </summary>
     public int CarrierCount;
+
+    /// <summary>
+    /// Determines how many constructors are in storage.
+    /// </summary>
+    public int ConstructorCount;
 
     /// <summary>
     /// the queue of pending orders for the carriers.
