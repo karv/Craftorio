@@ -8,22 +8,20 @@ using Production;
 /// </summary>
 public class EntityFactory
 {
-    public static readonly RectangleExpand DefaultSpriteSize = new RectangleExpand
-    {
-        Left = 15,
-        Right = 16,
-        Top = 15,
-        Bottom = 16,
-    };
-
     [Newtonsoft.Json.JsonProperty("Prototypes")]
     private Dictionary<string, EntityPrototype> prototypes = new Dictionary<string, EntityPrototype>();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EntityFactory"/> class.
+    /// </summary>
     public EntityFactory(World world)
     {
         World = world;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EntityFactory"/> class using a json file with prototypes definitions.
+    /// </summary>
     public EntityFactory(World world, string jsonFileName)
     {
         World = world;
@@ -42,12 +40,24 @@ public class EntityFactory
         }) ?? throw new System.IO.FileLoadException("Failed to load entity prototypes from json file.");
     }
 
+    /// <summary>
+    /// Gets the ECS world where the entities are created.
+    /// </summary>
+    /// <value></value>
     public World World { get; }
 
+    /// <summary>
+    /// Creates a default instance of this class. Currently not throwing an exception, and this method will be removed soon.
+    /// </summary>
     public static EntityFactory CreateDefaultFactory(World world)
     {
         throw new NotImplementedException();
     }
+
+    /// <summary>
+    /// Create a new entity from a given prototype name.
+    /// </summary>
+    /// <returns>The created entity.</returns>
     public Entity Create(string prototypeName)
     {
         var prototype = prototypes[prototypeName];
@@ -94,6 +104,14 @@ public class EntityFactory
         return ret;
     }
 
+    /// <summary>
+    /// Creates a construction site entity.
+    /// </summary>
+    /// <param name="location">Location of the site.</param>
+    /// <param name="prototypeName">Name of the prototype of the finished building.</param>
+    /// <param name="resourcesRequired">Resources required to complete.</param>
+    /// <param name="timeRequired">Construction time in milliseconds.</param>
+    /// <returns>The created construction site.</returns>
     public Entity CreateConstruction(
         Vector2 location,
         string prototypeName,
@@ -103,6 +121,14 @@ public class EntityFactory
         return CreateConstruction(location, this.prototypes[prototypeName], resourcesRequired, timeRequired);
     }
 
+    /// <summary>
+    /// Creates a construction site entity.
+    /// </summary>
+    /// <param name="location">Location of the site.</param>
+    /// <param name="prototype">Prototype of the finished building.</param>
+    /// <param name="resourcesRequired">Resources required to complete.</param>
+    /// <param name="timeRequired">Construction time in milliseconds.</param>
+    /// <returns>The created construction site.</returns>
     public Entity CreateConstruction(
         Vector2 location,
         Craftorio.EntityPrototype prototype,
@@ -141,12 +167,8 @@ public class EntityFactory
     /// <summary>
     /// Creates a miner entity.
     /// </summary>
-    /// <param name="world">ECS world.</param>
     /// <param name="location">Location of the entity.</param>
-    /// <param name="Cost">Cost in milliseconds of every mined items.</param>
-    /// <param name="Speed">Speed multiplier.</param>
     /// <param name="ItemId">Item that is mined.</param>
-    /// <returns></returns>
     public Entity CreateMiner(Vector2 location,
     int ItemId = 1)
     {
@@ -160,7 +182,6 @@ public class EntityFactory
     /// <summary>
     /// Creates a storage entity with access to the logistic network.
     /// </summary>
-    /// <param name="world">ECS world.</param>
     /// <param name="location">Location of the entity.</param>
     /// <param name="box">If not null, the storage box.</param>
     /// <param name="requests">If not null, the requested items.</param>
@@ -193,6 +214,9 @@ public class EntityFactory
         return ret;
     }
 
+    /// <summary>
+    /// Register a prototype with a specified name.
+    /// </summary>
     public void RegisterPrototype(string name, EntityPrototype prototype)
     {
         prototypes.Add(name, prototype);
