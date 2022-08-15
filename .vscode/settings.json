@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
-        "Craftorio"
+        "Craftorio",
+        "Newtonsoft"
     ],
     "dotnet-test-explorer.testProjectPath": "Tests/Tests.csproj"
 }

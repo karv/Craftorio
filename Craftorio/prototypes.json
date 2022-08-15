@@ -1,0 +1,39 @@
+{
+  "assembler-1": {
+    "Components": {
+      "Craftorio.Production.TimeConsumption, Craftorio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
+        "$type": "Craftorio.Production.TimeConsumption, Craftorio",
+        "Speed": 0.5
+      },
+      "Craftorio.Logistic.ProvideData, Craftorio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
+        "$type": "Craftorio.Logistic.ProvideData, Craftorio"
+      },
+      "Craftorio.Logistic.RequestData, Craftorio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
+        "$type": "Craftorio.Logistic.RequestData, Craftorio"
+      },
+      "Craftorio.Drawing.Sprite, Craftorio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
+        "$type": "Craftorio.Drawing.Sprite, Craftorio",
+        "Color": "ff0000ff",
+        "RelativeDrawingArea": {
+          "Left": 15,
+          "Right": 16,
+          "Top": 15,
+          "Bottom": 16
+        }
+      },
+      "Craftorio.Drawing.UI.MouseOverDisplayText, Craftorio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
+        "$type": "Craftorio.Drawing.UI.MouseOverDisplayText, Craftorio",
+        "RelativeSensibleArea": {
+          "Left": 15,
+          "Right": 16,
+          "Top": 15,
+          "Bottom": 16
+        }
+      },
+      "Craftorio.IBox, Craftorio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
+        "$type": "Craftorio.Box, Craftorio",
+        "Capacity": 10
+      }
+    }
+  }
+}

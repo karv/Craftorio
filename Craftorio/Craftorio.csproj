@@ -14,6 +14,11 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+      <None Include="prototypes.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+  </ItemGroup>  
+  <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
@@ -33,6 +38,7 @@
     <PackageReference Include="monogame.extended" Version="3.8.0" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
+    <PackageReference Include="newtonsoft.json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="../Tests/Tests.csproj" />

@@ -25,13 +25,14 @@ public class ItemProductionChain
     [Test]
     public void SetupAssembler()
     {
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
         var recipe = new Craftorio.Production.Recipe
         {
             Outputs = new[] { new ItemStack { ItemId = 1, Count = 1 } },
             Inputs = new[] { new ItemStack { ItemId = 0, Count = 1 } },
             BaseTime = 10 // 10 ms per batch
         };
-        var ent0 = EntityFactory.CreateAssembler(world, new Microsoft.Xna.Framework.Vector2(0, 0), recipe);
+        var ent0 = factory.CreateAssembler(new (0, 0), recipe);
         // Add some materials to the assembler.
         Box input = (Box)ent0.Get<IBox>();
         input.TryStore(0, 10);

@@ -22,6 +22,7 @@ public class EntityPrototype
     /// </summary>
     private static readonly MethodInfo setMethod = typeof(Entity).GetMethods()[8];
 
+    [Newtonsoft.Json.JsonProperty("Components")]
     private Dictionary<Type, Object> components = new Dictionary<Type, Object>();
 
     /// <summary>

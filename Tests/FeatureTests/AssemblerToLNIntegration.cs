@@ -26,6 +26,7 @@ public class AssemblerToLNIntegration
     [Test]
     public void AssemblersAreProviders()
     {
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
         // Add a assembler and a box that requests 1 output item.
         // Include the recipe requirements in the box of the assembler.
         var recipe = new Craftorio.Production.Recipe
@@ -35,11 +36,9 @@ public class AssemblerToLNIntegration
             BaseTime = 10 // 10 ms per batch
         };
 
-        var ent0 = EntityFactory.CreateAssembler(
-            world,
-            new Microsoft.Xna.Framework.Vector2(0, 0),
-            recipe,
-            includeLogisticSupport: true);
+        var ent0 = factory.CreateAssembler(
+            new (0, 0),
+            recipe);
         var ent1 = EntityFactory.CreateStorageBox(
             world,
             new Microsoft.Xna.Framework.Vector2(0, 0),

@@ -97,6 +97,7 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void SetupInitialState(World World)
     {
+        var factory = Services.GetService<EntityFactory>();
         // Add something under construction
         var minerPrototype = new EntityPrototype();
         minerPrototype.AddComponent<IBox>(new Box());
@@ -154,8 +155,7 @@ public class Game : Microsoft.Xna.Framework.Game
             Inputs = new ItemStack[] { new ItemStack { ItemId = 1, Count = 1 } },
             Outputs = new ItemStack[] { new ItemStack { ItemId = 5, Count = 1 } }
         };
-        var asm = EntityFactory.CreateAssembler(World, new(-100, 100), recipe,
-            includeLogisticSupport: true);
+        var asm = factory.CreateAssembler(new(-100, 100), recipe);
 
         // Listen to events
         // World.Subscribe<Logistic.CarrierCreated>(When);
@@ -165,6 +165,8 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void SetupServices()
     {
+        //Services.AddService<EntityFactory>(EntityFactory.CreateDefaultFactory(World));
+        Services.AddService<EntityFactory>(new EntityFactory(World, "prototypes.json"));
     }
 
     private void When(in Logistic.CarrierCreated msg)

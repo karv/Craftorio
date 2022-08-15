@@ -5,69 +5,43 @@ using Production;
 /// <summary>
 /// Module that exposes method for commonly used entity types.
 /// </summary>
-public static class EntityFactory
+public class EntityFactory
 {
-    /// <summary>
-    /// The default value for the RelativeDrawingArea value in the Sprite component.
-    /// </summary>
-    public static readonly RectangleExpand DefaultSpriteSize = new Craftorio.RectangleExpand
+    public static readonly RectangleExpand DefaultSpriteSize = new RectangleExpand
     {
         Left = 15,
         Right = 16,
         Top = 15,
-        Bottom = 16
+        Bottom = 16,
     };
 
-    /// <summary>
-    /// Creates an assembler-type entity.
-    /// </summary>
-    /// <param name="world">ECS World.</param>
-    /// <param name="location">Location of the entity.</param>
-    /// <param name="recipe">Recipe of the assembler.</param>
-    /// <param name="includeLogisticSupport">is true, will add logistic requester-providers
-    /// depending on the recipe</param>
-    /// <param name="speed">the speed multiplier of the assembler</param>
-    /// <returns>The created entity.</returns>
-    public static Entity CreateAssembler(World world, Vector2 location, Recipe recipe,
-        bool includeLogisticSupport = false,
-        float speed = 1f)
+    [Newtonsoft.Json.JsonProperty("Prototypes")]
+    private Dictionary<string, EntityPrototype> prototypes = new Dictionary<string, EntityPrototype>();
+
+    public EntityFactory(World world)
     {
-        Box box = new();
-        var assembler = world.CreateEntity();
-        assembler.Set<IBox>(box);
-        assembler.Set<TimeConsumption>(new TimeConsumption
-        {
-            Cost = recipe.BaseTime,
-            Speed = speed,
-            ProductionState = ProductionState.WaitingForResources
-        });
-        assembler.Set(new Location(location));
-        assembler.Set(recipe.ToComponent());
-        if (includeLogisticSupport)
-        {
-            var provData = new ProvideData();
-            var reqData = new RequestData();
-            // Add the request data to the assembler
-            foreach (var input in recipe.Inputs)
-                reqData.AddRequest(input.ItemId, input.Count);
-            assembler.Set<ProvideData>(provData);
-            assembler.Set<RequestData>(reqData);
-        }
-        assembler.Set(new Drawing.Sprite { Color = Color.Red, RelativeDrawingArea = DefaultSpriteSize });
-        assembler.Set(new Drawing.UI.MouseOverDisplayText
-        {
-            GetText = GetTooltip,
-            RelativeSensibleArea = DefaultSpriteSize
-        });
-
-        static string GetTooltip(Entity entity)
-        {
-            var timer = entity.Get<TimeConsumption>();
-            return $"{timer.ProductionState}#{timer.Progress}/{timer.Cost}:{entity.Get<RecipeComponent>().Outputs[0].Count}";
-        }
-
-        return assembler;
+        World = world;
     }
+
+    public EntityFactory(World world, string jsonFileName)
+    {
+        World = world;
+        // Load the components field from the json file.
+        var json = System.IO.File.ReadAllText(jsonFileName);
+        prototypes = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, EntityPrototype>>(json, new Newtonsoft.Json.JsonSerializerSettings
+        {
+            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
+            TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple,
+            ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace,
+            MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error,
+            Converters = new List<Newtonsoft.Json.JsonConverter>
+            {
+                new Craftorio.Json.ColorConverter()
+            }
+        }) ?? throw new System.IO.FileLoadException("Failed to load entity prototypes from json file.");
+    }
+
+    public World World { get; }
 
     /// <summary>
     /// Creates a base node entity.
@@ -107,6 +81,25 @@ public static class EntityFactory
             RelativeSensibleArea = DefaultSpriteSize
         });
         return baseEntity;
+    }
+
+    public static EntityFactory CreateDefaultFactory(World world)
+    {
+        var factory = new EntityFactory(world);
+
+        factory.prototypes = CreatePrototypes();
+
+        var str = Newtonsoft.Json.JsonConvert.SerializeObject(factory.prototypes,
+            Newtonsoft.Json.Formatting.Indented,
+            new Newtonsoft.Json.JsonSerializerSettings
+            {
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            });
+        // store this string into a file
+        System.IO.File.WriteAllText("prototypes.json", str);
+
+        return factory;
     }
 
     /// <summary>
@@ -184,5 +177,76 @@ public static class EntityFactory
         }
 
         return storageBox;
+    }
+
+    public Entity Create(string prototypeName)
+    {
+        var prototype = prototypes[prototypeName];
+        var entity = prototype.CreateEntity(World);
+        return entity;
+    }
+
+    /// <summary>
+    /// Creates an assembler-type entity.
+    /// </summary>
+    /// <param name="location">Location of the entity.</param>
+    /// <param name="recipe">Recipe of the assembler.</param>
+    /// <param name="speed">the speed multiplier of the assembler</param>
+    /// <returns>The created entity.</returns>
+    public Entity CreateAssembler(Vector2 location,
+        Recipe recipe,
+        float speed = 1f)
+    {
+        var ret = Create("assembler-1");
+        ret.Set(new Location(location));
+        ret.Set(recipe.ToComponent());
+        ret.Get<TimeConsumption>().Speed = speed;
+        return ret;
+    }
+
+    public void RegisterPrototype(string name, EntityPrototype prototype)
+    {
+        prototypes.Add(name, prototype);
+    }
+
+    private static Dictionary<string, EntityPrototype> CreatePrototypes()
+    {
+
+        var ret = new Dictionary<string, EntityPrototype>();
+        // Assembler-1
+        var assembler1 = new EntityPrototype();
+        ret.Add("assembler-1", assembler1);
+        assembler1.AddComponent(new TimeConsumption
+        {
+            Cost = 0,
+            Speed = 0.5f,
+            ProductionState = ProductionState.Idle
+        });
+        assembler1.AddComponent(new Logistic.ProvideData());
+        assembler1.AddComponent(new Logistic.RequestData());
+        assembler1.AddComponent(new Drawing.Sprite { Color = Color.Red });
+        assembler1.AddComponent(new Drawing.UI.MouseOverDisplayText
+        {
+            GetText = GetTooltipAssembler
+        });
+        assembler1.AddComponent<IBox>(new Box());
+
+        static string GetTooltipAssembler(Entity entity)
+        {
+            var timer = entity.Get<TimeConsumption>();
+            return $"{timer.ProductionState}#{timer.Progress}/{timer.Cost}:{entity.Get<RecipeComponent>().Outputs[0].Count}";
+        }
+
+        // Load the prototype from the file
+        /*
+        var str = System.IO.File.ReadAllText("prototypes.json");
+        var ret = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, EntityPrototype>>(str,
+            new Newtonsoft.Json.JsonSerializerSettings
+            {
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            });
+        */
+        return ret;
     }
 }
