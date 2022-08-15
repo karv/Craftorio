@@ -31,7 +31,7 @@ public class ItemProductionChain
             Inputs = new[] { new ItemStack { ItemId = 0, Count = 1 } },
             BaseTime = 10 // 10 ms per batch
         };
-        var ent0 = EntityFactory.CreateAssembler(world, new MonoGame.Extended.RectangleF(0, 0, 100, 100), recipe);
+        var ent0 = EntityFactory.CreateAssembler(world, new Microsoft.Xna.Framework.Vector2(0, 0), recipe);
         // Add some materials to the assembler.
         Box input = (Box)ent0.Get<IBox>();
         input.TryStore(0, 10);
@@ -52,10 +52,10 @@ public class ItemProductionChain
     [Test]
     public void SetupMiner()
     {
-        var ent0 = EntityFactory.CreateMiner(world, new MonoGame.Extended.RectangleF(0, 0, 100, 100));
-        var ent1 = EntityFactory.CreateMiner(world, new MonoGame.Extended.RectangleF(0, 0, 100, 100),
+        var ent0 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0));
+        var ent1 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0),
         Speed: 1.5f);
-        var ent2 = EntityFactory.CreateMiner(world, new MonoGame.Extended.RectangleF(0, 0, 100, 100),
+        var ent2 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0),
         Speed: 2f);
 
         var iterations = ItemProductionChain.iterations + 10; // Add 10 for the lost on cycle finishing for each expected completed item in the last assertion. ;

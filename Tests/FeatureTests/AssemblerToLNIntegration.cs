@@ -2,7 +2,7 @@ namespace Test;
 using DefaultEcs;
 
 [TestFixture]
-public class AssemblerToLNIntegration 
+public class AssemblerToLNIntegration
 {
     private readonly DefaultEcs.System.ISystem<int> system;
     private readonly World world;
@@ -11,17 +11,6 @@ public class AssemblerToLNIntegration
     const int deltaMilliseconds = 1000 / 60;
     const int iterations = totalMilliseconds / deltaMilliseconds;
     const int totalMilliseconds = 5000;
-
-    [SetUp]
-    public void Setup()
-    {
-        network = new Craftorio.Logistic.LogisticNetwork(world);
-        // Create a base at origin
-        EntityFactory.CreateBase(
-            world,
-            default,
-            network);
-    }
 
     public AssemblerToLNIntegration()
     {
@@ -48,12 +37,12 @@ public class AssemblerToLNIntegration
 
         var ent0 = EntityFactory.CreateAssembler(
             world,
-            new MonoGame.Extended.RectangleF(0, 0, 100, 100),
+            new Microsoft.Xna.Framework.Vector2(0, 0),
             recipe,
             includeLogisticSupport: true);
         var ent1 = EntityFactory.CreateStorageBox(
             world,
-            new MonoGame.Extended.RectangleF(0, 0, 100, 100),
+            new Microsoft.Xna.Framework.Vector2(0, 0),
             requests: new[] { 1 });
 
         // Add some materials to the assembler.
@@ -72,5 +61,16 @@ public class AssemblerToLNIntegration
         {
             carrierCreated = true;
         }
+    }
+
+    [SetUp]
+    public void Setup()
+    {
+        network = new Craftorio.Logistic.LogisticNetwork(world);
+        // Create a base at origin
+        EntityFactory.CreateBase(
+            world,
+            default,
+            network);
     }
 }

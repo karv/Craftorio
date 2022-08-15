@@ -100,7 +100,8 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
         var mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
         var mouseScreenLocation = mouseState.Position.ToVector2();
         var mouseWorldLocation = camera!.ScreenToWorld(mouseScreenLocation);
-        entityCatched = displayState.IsCurrentlyHovered = location.Bounds.Contains(mouseWorldLocation);
+        var sensibleArea = displayState.RelativeSensibleArea.Expand(in location.AsVector);
+        entityCatched = displayState.IsCurrentlyHovered = sensibleArea.Contains(mouseWorldLocation);
 
         // This should be refactored
         if (displayState.IsCurrentlyHovered)
@@ -118,13 +119,9 @@ public sealed class DisplayTextGenerator : AEntitySetSystem<int>
                     // Use the measure of the font to get the smallest rectangle that fits the text.
                     var textSize = Font!.MeasureString(displayState.Text);
                     var textBounds = new RectangleF(
-                        location.Bounds.TopLeft,
+                        location.AsVector,
                         textSize);
-                    hintEntity.Set(new Location(
-                        new RectangleF(
-                            textBounds.TopLeft,
-                            textBounds.Size))
-                    );
+                    hintEntity.Set(location);
                     hintEntity.Set(new TextSprite
                     {
                         Font = Font!,  // Se assume the font is already set, otherwise its clear that the game must break.

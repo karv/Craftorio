@@ -30,7 +30,7 @@ public class SpriteBox
     /// <summary>
     /// Create a entity being a info box with the specified string and location
     /// </summary>
-    public Entity CreateInfoBox(string text, RectangleF location,
+    public Entity CreateInfoBox(string text, Vector2 location,
     SpriteFont? font = null)
     {
         var infoBox = world.CreateEntity();

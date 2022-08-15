@@ -41,7 +41,7 @@ public class ConstructionFinishedSystem : AEntitySetSystem<int>
             {
                 var network = constructor.Get<Logistic.ConstructorData>().Network;
                 constructor.Get<Logistic.ConstructorData>().State = Logistic.ConstructorData.ConstructorState.ReturnToBase;
-                var location = constructor.Get<Location>().Bounds.Center;
+                var location = constructor.Get<Location>().AsVector;
                 if (network.TryGetClosestBase(location, out var baseEntity))
                 {
                     constructor.Get<MovingObject>().TargetEntity = baseEntity;

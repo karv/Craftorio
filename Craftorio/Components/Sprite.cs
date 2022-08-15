@@ -15,4 +15,9 @@ public record struct Sprite
     /// The color of the sprite. This is used when the texture is null.
     /// </summary>
     public Color Color;
+
+    /// <summary>
+    /// Represents the relative location of the area where the sprite will be drawn.
+    /// </summary>
+    public RectangleExpand RelativeDrawingArea;
 }

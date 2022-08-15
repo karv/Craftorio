@@ -7,6 +7,14 @@ using Production;
 /// </summary>
 public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
 {
+
+    private static readonly RectangleExpand carrierSize = new RectangleExpand
+    {
+        Left = 5,
+        Right = 5,
+        Top = 5,
+        Bottom = 5
+    };
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseNodeCarrierCreationSystem"/> class.
     /// </summary>
@@ -49,7 +57,7 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
                 nodeBase.OrdersQueue.Dequeue();
             else order.Amount--;
 
-            var carrier = CreateCarrier(order, nodeBase.Network, location.Bounds, entity);
+            var carrier = CreateCarrier(order, nodeBase.Network, location, entity);
             nodeBase.CarrierCount--; // Remove one carrier from the base.
         }
         else
@@ -59,11 +67,11 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
         timer.Reset();
     }
 
-    private Entity CreateCarrier(LogisticOrder order, LogisticNetwork network, RectangleF location, Entity baseNode)
+    private Entity CreateCarrier(LogisticOrder order, LogisticNetwork network, in Location location, in Entity baseNode)
     {
         var carrier = World.CreateEntity();
         // Put it somewhere, at the origin for now
-        carrier.Set<Location>(new Location(location));
+        carrier.Set(in location);
         carrier.Set(new CarrierData
         {
             Order = order,
@@ -78,7 +86,8 @@ public class BaseNodeCarrierCreationSystem : AEntitySetSystem<int>
         });
         carrier.Set(new Craftorio.Drawing.Sprite
         {
-            Color = Color.YellowGreen
+            Color = Color.YellowGreen,
+            RelativeDrawingArea = carrierSize,
         });
         World.Publish(new CarrierCreated { Carrier = carrier, BaseNode = baseNode });
         return carrier;
