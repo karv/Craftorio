@@ -8,6 +8,17 @@ using Production;
 public static class EntityFactory
 {
     /// <summary>
+    /// The default value for the RelativeDrawingArea value in the Sprite component.
+    /// </summary>
+    public static readonly RectangleExpand DefaultSpriteSize = new Craftorio.RectangleExpand
+    {
+        Left = 15,
+        Right = 16,
+        Top = 15,
+        Bottom = 16
+    };
+
+    /// <summary>
     /// Creates an assembler-type entity.
     /// </summary>
     /// <param name="world">ECS World.</param>
@@ -17,7 +28,7 @@ public static class EntityFactory
     /// depending on the recipe</param>
     /// <param name="speed">the speed multiplier of the assembler</param>
     /// <returns>The created entity.</returns>
-    public static Entity CreateAssembler(World world, RectangleF location, Recipe recipe,
+    public static Entity CreateAssembler(World world, Vector2 location, Recipe recipe,
         bool includeLogisticSupport = false,
         float speed = 1f)
     {
@@ -42,10 +53,11 @@ public static class EntityFactory
             assembler.Set<ProvideData>(provData);
             assembler.Set<RequestData>(reqData);
         }
-        assembler.Set(new Drawing.Sprite { Color = Color.Red });
+        assembler.Set(new Drawing.Sprite { Color = Color.Red, RelativeDrawingArea = DefaultSpriteSize });
         assembler.Set(new Drawing.UI.MouseOverDisplayText
         {
-            GetText = GetTooltip
+            GetText = GetTooltip,
+            RelativeSensibleArea = DefaultSpriteSize
         });
 
         static string GetTooltip(Entity entity)
@@ -68,7 +80,7 @@ public static class EntityFactory
     /// <param name="carrierDeploySpeed">How fast the carriers are deployed, in carriers per second.</param>
     /// <returns>The created entity.</returns>
     public static Entity CreateBase(
-        World world, RectangleF location, LogisticNetwork network,
+        World world, Vector2 location, LogisticNetwork network,
         int carrierCount = 10,
         int constructorCount = 10,
         float carrierDeploySpeed = 1f)
@@ -82,7 +94,7 @@ public static class EntityFactory
             OrdersQueue = new CE.Collections.Queue<LogisticOrder>(),
             Network = network
         });
-        baseEntity.Set(new Drawing.Sprite { Color = Color.White });
+        baseEntity.Set(new Drawing.Sprite { Color = Color.White, RelativeDrawingArea = DefaultSpriteSize });
         baseEntity.Set(new TimeConsumption
         {
             Cost = 1000,
@@ -91,7 +103,8 @@ public static class EntityFactory
         });
         baseEntity.Set(new Drawing.UI.MouseOverDisplayText
         {
-            Text = "Just a base"
+            Text = "Just a base",
+            RelativeSensibleArea = DefaultSpriteSize
         });
         return baseEntity;
     }
@@ -105,7 +118,7 @@ public static class EntityFactory
     /// <param name="Speed">Speed multiplier.</param>
     /// <param name="ItemId">Item that is mined.</param>
     /// <returns></returns>
-    public static Entity CreateMiner(World world, RectangleF location,
+    public static Entity CreateMiner(World world, Vector2 location,
     int Cost = 1000,
     float Speed = 1f,
     int ItemId = 1)
@@ -123,10 +136,11 @@ public static class EntityFactory
         miner.Set<Production.ItemTarget>(new Production.ItemTarget { ItemId = ItemId });
         miner.Set<Logistic.ProvideData>(pData);
         miner.Set(new Location(location));
-        miner.Set(new Drawing.Sprite { Color = Color.Green });
+        miner.Set(new Drawing.Sprite { Color = Color.Green, RelativeDrawingArea = DefaultSpriteSize });
         miner.Set(new Drawing.UI.MouseOverDisplayText
         {
             GetText = (Entity entity) => $"Mining {entity.Get<Production.ItemTarget>().ItemId}",
+            RelativeSensibleArea = DefaultSpriteSize
         });
         return miner;
     }
@@ -139,7 +153,7 @@ public static class EntityFactory
     /// <param name="box">If not null, the storage box.</param>
     /// <param name="requests">If not null, the requested items.</param>
     /// <param name="isProvider">If set to <see langword="true"/>, this box will be considered as provider by the LN.</param>
-    public static Entity CreateStorageBox(World world, RectangleF location,
+    public static Entity CreateStorageBox(World world, Vector2 location,
     Box? box = null,
     int[]? requests = null,
     bool isProvider = false
@@ -157,10 +171,11 @@ public static class EntityFactory
             storageBox.Set<Logistic.RequestData>(req);
         }
         storageBox.Set<Location>(new Location(location));
-        storageBox.Set(new Drawing.Sprite { Color = Color.Yellow });
+        storageBox.Set(new Drawing.Sprite { Color = Color.Yellow, RelativeDrawingArea = DefaultSpriteSize });
         storageBox.Set(new Drawing.UI.MouseOverDisplayText
         {
-            GetText = (Entity entity) => entity.Get<IBox>().DisplayContent()
+            GetText = (Entity entity) => entity.Get<IBox>().DisplayContent(),
+            RelativeSensibleArea = DefaultSpriteSize
         });
         if (isProvider)
         {

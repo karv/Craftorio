@@ -7,6 +7,14 @@ using Production;
 /// </summary>
 public sealed class ConstructorDeploySystem : AEntitySetSystem<int>
 {
+
+    private static readonly RectangleExpand constructorSize = new RectangleExpand
+    {
+        Left = 5,
+        Right = 5,
+        Top = 5,
+        Bottom = 5
+    };
     /// <summary>
     /// Entities considered in step 2 (construction) of the construction process.
     /// </summary>
@@ -60,10 +68,9 @@ public sealed class ConstructorDeploySystem : AEntitySetSystem<int>
             return;
 
         timer.Reset();
-        var baseLocation = entity.Get<Location>();
 
         // Deploy a constructor to the first entity in the constructingEntities set.
-        var constructor = CreateConstructor(World, baseLocation.Bounds, node.Network);
+        var constructor = CreateConstructor(World, entity.Get<Location>(), node.Network);
         node.ConstructorCount--;
 
         // Tell the constructor to move towards the construction site.
@@ -74,10 +81,10 @@ public sealed class ConstructorDeploySystem : AEntitySetSystem<int>
         });
     }
 
-    private static Entity CreateConstructor(World world, RectangleF location, Logistic.LogisticNetwork network)
+    private static Entity CreateConstructor(World world, in Location location, Logistic.LogisticNetwork network)
     {
         var constructor = world.CreateEntity();
-        constructor.Set(new Location(location));
+        constructor.Set(location);
         constructor.Set(new Logistic.ConstructorData
         {
             ConstructionSpeed = 1f,
@@ -86,7 +93,8 @@ public sealed class ConstructorDeploySystem : AEntitySetSystem<int>
         });
         constructor.Set(new Craftorio.Drawing.Sprite
         {
-            Color = Color.LightBlue
+            Color = Color.LightBlue,
+            RelativeDrawingArea = constructorSize
         });
 
         return constructor;

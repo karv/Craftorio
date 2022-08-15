@@ -45,18 +45,19 @@ public sealed class SpriteDrawing : DefaultEcs.System.AEntitySetSystem<int>
     {
         // Do not draw if the entity is not visible.
         ref var location = ref entity.Get<Location>();
-        if (!Camera!.BoundingRectangle.Intersects(location.Bounds)) return;
+        if (!Camera!.BoundingRectangle.Contains(location.AsVector)) return;
 
         ref var sprite = ref entity.Get<Sprite>();
+        var drawingRectangle = sprite.RelativeDrawingArea.Expand(in location.AsVector);
         if (sprite.Texture is null)
         {
             // If no texture is set, draw a box with the color.
-            spriteBatch.FillRectangle(location.Bounds, sprite.Color);
+            spriteBatch.FillRectangle(drawingRectangle, sprite.Color);
         }
         else
         {
             // If a texture is set, draw it.
-            spriteBatch.Draw(sprite.Texture, location.Bounds.ToRectangle(), sprite.Color);
+            spriteBatch.Draw(sprite.Texture, drawingRectangle.ToRectangle(), sprite.Color);
         }
     }
 }

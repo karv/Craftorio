@@ -21,6 +21,12 @@ public struct MouseOverDisplayText
     public bool IsCurrentlyHovered;
 
     /// <summary>
+    /// Represents the relative location of the area that is sensible to the mouse, where the tooltip
+    /// will be displayed.
+    /// </summary>
+    public RectangleExpand RelativeSensibleArea;
+
+    /// <summary>
     /// Display text.
     /// </summary>
     public string? Text;

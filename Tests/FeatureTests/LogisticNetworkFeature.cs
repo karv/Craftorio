@@ -1,7 +1,5 @@
-using System.Linq;
 namespace Test;
 using DefaultEcs;
-using MonoGame.Extended;
 
 /// <summary>
 /// Tests covering the logistic network feature.
@@ -19,15 +17,14 @@ public class LogisticNetworkFeature
         // Add a provider box, a requester box, and a carrier base.
         var proBox = new Box();
         var reqBox = new Box();
-        const int boxDistance = 10;
         proBox.TryStore(1, 1);
-        var provider = EntityFactory.CreateStorageBox(world, new MonoGame.Extended.RectangleF(0, 0, 10, 10),
+        var provider = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
             box: proBox,
             isProvider: true);
-        var requester = EntityFactory.CreateStorageBox(world, new MonoGame.Extended.RectangleF(boxDistance, 0, 10, 10),
+        var requester = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
             box: reqBox,
             requests: new[] { 1 });
-        var nodeBase = EntityFactory.CreateBase(world, new MonoGame.Extended.RectangleF(0, 0, 10, 10), logisticNetwork);
+        var nodeBase = EntityFactory.CreateBase(world, new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
 
         // Run for 5 seconds at 60fps
         const int deltaTime = 1000 / 60;
@@ -40,11 +37,40 @@ public class LogisticNetworkFeature
     }
 
     [Test]
+    public void DoNotCreateMoreOrdersThanTheRequest()
+    {
+        // Add a provider box, a requester box, and a carrier base.
+        var proBox = new Box();
+        var reqBox = new Box();
+        proBox.TryStore(1, 10);
+
+        var provider = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
+            box: proBox,
+            isProvider: true);
+        var requester = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
+            box: reqBox,
+            requests: new[] { 1 });
+        var nodeBase = EntityFactory.CreateBase(world, new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
+
+        // The requester only want 3 of the item 1.
+        requester.Get<Craftorio.Logistic.RequestData>().ChangeRequestOf(1, 3);
+
+        // Set the timer of the base to ready.
+        nodeBase.Get<Craftorio.Production.TimeConsumption>().Complete();
+
+        // Run once to let the network update.
+        system.Update(0);
+
+        // Should have 3 (or 2 if a carrier was dispatched) orders.
+        Assert.That(logisticNetwork.GetAllOrdersFromTo(provider, requester).Sum(x => x.Amount), Is.AnyOf(2, 3));
+    }
+
+    [Test]
     public void NoProvidersWillNotCreateCarrier()
     {
         // Add a base and a requester
-        var baseNode = EntityFactory.CreateBase(world, new RectangleF(0, 0, 1, 1), logisticNetwork);
-        var requester = EntityFactory.CreateStorageBox(world, new RectangleF(0, 0, 1, 1),
+        var baseNode = EntityFactory.CreateBase(world, new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
+        var requester = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
         requests: new[] { 1 });
         // Subscribe: if any carrier is created, fail the test.
         world.Subscribe<Craftorio.Logistic.CarrierCreated>(AssertNoCarrierCreated);
@@ -64,10 +90,10 @@ public class LogisticNetworkFeature
         // Add a base and a provider
         var proBox = new Box();
         proBox.TryStore(1, 1);
-        var provider = EntityFactory.CreateStorageBox(world, new MonoGame.Extended.RectangleF(0, 0, 10, 10),
+        var provider = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
             box: proBox,
             isProvider: true);
-        var baseNode = EntityFactory.CreateBase(world, new RectangleF(0, 0, 1, 1), logisticNetwork);
+        var baseNode = EntityFactory.CreateBase(world, new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
         // Subscribe: if any carrier is created, fail the test.
         world.Subscribe<Craftorio.Logistic.CarrierCreated>(AssertNoCarrierCreated);
         // Run for 5 seconds at 60fps
@@ -79,36 +105,6 @@ public class LogisticNetworkFeature
         {
             Assert.Fail();
         }
-    }
-
-    [Test]
-    public void DoNotCreateMoreOrdersThanTheRequest ()
-    {
-        // Add a provider box, a requester box, and a carrier base.
-        var proBox = new Box();
-        var reqBox = new Box();
-        const int boxDistance = 10;
-        proBox.TryStore(1, 10);
-
-        var provider = EntityFactory.CreateStorageBox(world, new MonoGame.Extended.RectangleF(0, 0, 10, 10),
-            box: proBox,
-            isProvider: true);
-        var requester = EntityFactory.CreateStorageBox(world, new MonoGame.Extended.RectangleF(boxDistance, 0, 10, 10),
-            box: reqBox,
-            requests: new[] { 1 });
-        var nodeBase = EntityFactory.CreateBase(world, new MonoGame.Extended.RectangleF(0, 0, 10, 10), logisticNetwork);
-
-        // The requester only want 3 of the item 1.
-        requester.Get<Craftorio.Logistic.RequestData>().ChangeRequestOf(1, 3);
-
-        // Set the timer of the base to ready.
-        nodeBase.Get<Craftorio.Production.TimeConsumption>().Complete();
-
-        // Run once to let the network update.
-        system.Update(0);
-
-        // Should have 3 (or 2 if a carrier was dispatched) orders.
-        Assert.That(logisticNetwork.GetAllOrdersFromTo(provider, requester).Sum(x => x.Amount), Is.AnyOf(2,3));
     }
 
     [SetUp]
