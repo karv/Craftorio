@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 namespace Craftorio;
 using Logistic;
 using Production;
@@ -47,7 +48,6 @@ public class EntityFactory
     {
         throw new NotImplementedException();
     }
-
     public Entity Create(string prototypeName)
     {
         var prototype = prototypes[prototypeName];
@@ -91,6 +91,50 @@ public class EntityFactory
         be.Network = network;
         be.CarrierCount = carrierCount;
         be.ConstructorCount = constructorCount;
+        return ret;
+    }
+
+    public Entity CreateConstruction(
+        Vector2 location,
+        string prototypeName,
+        Dictionary<int, int> resourcesRequired,
+        int timeRequired)
+    {
+        return CreateConstruction(location, this.prototypes[prototypeName], resourcesRequired, timeRequired);
+    }
+
+    public Entity CreateConstruction(
+        Vector2 location,
+        Craftorio.EntityPrototype prototype,
+        Dictionary<int, int> resourcesRequired,
+        int timeRequired)
+    {
+        var ret = World.CreateEntity();
+        ret.Set(new Location(location));
+        ret.Set(new Construction.Constructing
+        {
+            Prototype = prototype,
+            RequiredResources = resourcesRequired,
+            RequiredTime = timeRequired
+        });
+
+        // Get the size from the prototype
+        var protoSprite = (Drawing.Sprite)prototype.GetDictionary()[typeof(Drawing.Sprite)];
+
+        ret.Set(new Craftorio.Drawing.Sprite
+        {
+            Color = Color.DarkCyan,
+            RelativeDrawingArea = protoSprite.RelativeDrawingArea
+        });
+
+        ret.Set<IBox>(new Box(int.MaxValue));
+
+        // request the resources
+        var logisticRequirements = new Logistic.RequestData();
+        foreach (var (key, value) in resourcesRequired)
+            logisticRequirements.AddRequest(key, value);
+        ret.Set(logisticRequirements);
+
         return ret;
     }
 
