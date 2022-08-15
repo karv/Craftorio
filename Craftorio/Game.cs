@@ -97,55 +97,24 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void SetupInitialState(World World)
     {
-        // Add something under construction
-        var minerPrototype = new Construction.EntityPrototype();
-        minerPrototype.AddComponent<IBox>(new Box());
-        minerPrototype.AddComponent(new Production.TimeConsumption
-        {
-            Cost = 100,
-            Speed = 1,
-            ProductionState = Production.ProductionState.Working
-        });
-        minerPrototype.AddComponent(new Production.ItemTarget { ItemId = 10 });
-        minerPrototype.AddComponent(new Logistic.ProvideData());
-        minerPrototype.AddComponent(new Drawing.Sprite
-        {
-            Color = Color.DarkOrchid,
-            RelativeDrawingArea = EntityFactory.DefaultSpriteSize
-        });
-        var constructionMiner = World.CreateEntity();
-        constructionMiner.Set(new Construction.Constructing
-        {
-            Prototype = minerPrototype,
-            RequiredResources = new Dictionary<int, int> { { 1, 1 }, { 2, 1 } },
-            RequiredTime = 5000
-        });
-        constructionMiner.Set(new Location(new(-80, 0)));
-        constructionMiner.Set(new Craftorio.Drawing.Sprite
-        {
-            Color = Color.DarkCyan,
-            RelativeDrawingArea = EntityFactory.DefaultSpriteSize
-        });
-        constructionMiner.Set<IBox>(new Box());
-        var logisticRequirements = new Logistic.RequestData();
-        logisticRequirements.AddRequest(1, 1);
-        logisticRequirements.AddRequest(2, 1);
-        constructionMiner.Set(logisticRequirements);
+        var factory = Services.GetService<EntityFactory>();
+
+        // Add a construction site for a miner.
+        factory.CreateConstruction(new Vector2(-80, 0), "miner-1", new Dictionary<int, int> { { 1, 1 }, { 2, 1 } }, 5000);
 
         // Add some miners with different speeds and targets
-        EntityFactory.CreateMiner(World, new(-20, 20), Cost: 1000, Speed: 1, ItemId: 1);
-        EntityFactory.CreateMiner(World, new(0, 20), Cost: 1000, Speed: 1.3f, ItemId: 2);
-        EntityFactory.CreateMiner(World, new(20, 20), Cost: 1000, Speed: 1.5f, ItemId: 3);
-        EntityFactory.CreateMiner(World, new(40, 20), Cost: 1000, Speed: 2f, ItemId: 4);
+        factory.CreateMiner(new(-20, 20), 1);
+        factory.CreateMiner(new(0, 20), 2);
+        factory.CreateMiner(new(20, 20), 3);
+        factory.CreateMiner(new(40, 20), 4);
 
         // Add a box that ask for item 1 and 2
-        EntityFactory.CreateStorageBox(World, new(100, 100), requests: new int[] { 10 });
+        factory.CreateStorageBox(new(100, 100), requests: new int[] { 10 });
 
         // A node so things work
-        EntityFactory.CreateBase(World, new(0, 0), network,
+        factory.CreateBase(new(0, 0), network,
             carrierCount: 3,
-            constructorCount: 3,
-            carrierDeploySpeed: 10);
+            constructorCount: 3);
 
         // An assembler that transforms itemId 1 to itemId 5 every 1 second
         var recipe = new Production.Recipe
@@ -154,8 +123,7 @@ public class Game : Microsoft.Xna.Framework.Game
             Inputs = new ItemStack[] { new ItemStack { ItemId = 1, Count = 1 } },
             Outputs = new ItemStack[] { new ItemStack { ItemId = 5, Count = 1 } }
         };
-        var asm = EntityFactory.CreateAssembler(World, new(-100, 100), recipe,
-            includeLogisticSupport: true);
+        var asm = factory.CreateAssembler(new(-100, 100), recipe);
 
         // Listen to events
         // World.Subscribe<Logistic.CarrierCreated>(When);
@@ -165,6 +133,8 @@ public class Game : Microsoft.Xna.Framework.Game
 
     private void SetupServices()
     {
+        //Services.AddService<EntityFactory>(EntityFactory.CreateDefaultFactory(World));
+        Services.AddService<EntityFactory>(new EntityFactory(World, "prototypes.json"));
     }
 
     private void When(in Logistic.CarrierCreated msg)

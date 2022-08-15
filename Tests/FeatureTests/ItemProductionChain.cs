@@ -25,13 +25,14 @@ public class ItemProductionChain
     [Test]
     public void SetupAssembler()
     {
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
         var recipe = new Craftorio.Production.Recipe
         {
             Outputs = new[] { new ItemStack { ItemId = 1, Count = 1 } },
             Inputs = new[] { new ItemStack { ItemId = 0, Count = 1 } },
             BaseTime = 10 // 10 ms per batch
         };
-        var ent0 = EntityFactory.CreateAssembler(world, new Microsoft.Xna.Framework.Vector2(0, 0), recipe);
+        var ent0 = factory.CreateAssembler(new (0, 0), recipe);
         // Add some materials to the assembler.
         Box input = (Box)ent0.Get<IBox>();
         input.TryStore(0, 10);
@@ -52,11 +53,12 @@ public class ItemProductionChain
     [Test]
     public void SetupMiner()
     {
-        var ent0 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0));
-        var ent1 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0),
-        Speed: 1.5f);
-        var ent2 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0),
-        Speed: 2f);
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
+        var ent0 = factory.CreateMiner(new Microsoft.Xna.Framework.Vector2(0, 0));
+        var ent1 =factory.CreateMiner(new Microsoft.Xna.Framework.Vector2(0, 0));
+        ent1.Get<Craftorio.Production.TimeConsumption>().Speed = 1.5f;
+        var ent2 =factory.CreateMiner(new Microsoft.Xna.Framework.Vector2(0, 0));
+        ent1.Get<Craftorio.Production.TimeConsumption>().Speed = 2f;
 
         var iterations = ItemProductionChain.iterations + 10; // Add 10 for the lost on cycle finishing for each expected completed item in the last assertion. ;
         for (int i = 0; i < iterations; i++)
