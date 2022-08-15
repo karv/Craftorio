@@ -14,17 +14,18 @@ public class LogisticNetworkFeature
     [Test]
     public void BasicRequestedItemTransport()
     {
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
         // Add a provider box, a requester box, and a carrier base.
         var proBox = new Box();
         var reqBox = new Box();
         proBox.TryStore(1, 1);
-        var provider = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
+        var provider = factory.CreateStorageBox(new Microsoft.Xna.Framework.Vector2(0, 0),
             box: proBox,
             isProvider: true);
-        var requester = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
+        var requester = factory.CreateStorageBox(new Microsoft.Xna.Framework.Vector2(0, 0),
             box: reqBox,
             requests: new[] { 1 });
-        var nodeBase = EntityFactory.CreateBase(world, new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
+        var nodeBase = factory.CreateBase(new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
 
         // Run for 5 seconds at 60fps
         const int deltaTime = 1000 / 60;
@@ -39,18 +40,19 @@ public class LogisticNetworkFeature
     [Test]
     public void DoNotCreateMoreOrdersThanTheRequest()
     {
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
         // Add a provider box, a requester box, and a carrier base.
         var proBox = new Box();
         var reqBox = new Box();
         proBox.TryStore(1, 10);
 
-        var provider = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
+        var provider = factory.CreateStorageBox(new Microsoft.Xna.Framework.Vector2(0, 0),
             box: proBox,
             isProvider: true);
-        var requester = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
+        var requester = factory.CreateStorageBox(new Microsoft.Xna.Framework.Vector2(0, 0),
             box: reqBox,
             requests: new[] { 1 });
-        var nodeBase = EntityFactory.CreateBase(world, new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
+        var nodeBase = factory.CreateBase(new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
 
         // The requester only want 3 of the item 1.
         requester.Get<Craftorio.Logistic.RequestData>().ChangeRequestOf(1, 3);
@@ -68,10 +70,11 @@ public class LogisticNetworkFeature
     [Test]
     public void NoProvidersWillNotCreateCarrier()
     {
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
         // Add a base and a requester
-        var baseNode = EntityFactory.CreateBase(world, new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
-        var requester = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
-        requests: new[] { 1 });
+        var baseNode = factory.CreateBase(new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
+        var requester = factory.CreateStorageBox(new Microsoft.Xna.Framework.Vector2(0, 0),
+            requests: new[] { 1 });
         // Subscribe: if any carrier is created, fail the test.
         world.Subscribe<Craftorio.Logistic.CarrierCreated>(AssertNoCarrierCreated);
         // Run for 5 seconds at 60fps
@@ -87,13 +90,14 @@ public class LogisticNetworkFeature
     [Test]
     public void NoRequestersWillNotCreateCarrier()
     {
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
         // Add a base and a provider
         var proBox = new Box();
         proBox.TryStore(1, 1);
-        var provider = EntityFactory.CreateStorageBox(world, new Microsoft.Xna.Framework.Vector2(0, 0),
+        var provider = factory.CreateStorageBox(new Microsoft.Xna.Framework.Vector2(0, 0),
             box: proBox,
             isProvider: true);
-        var baseNode = EntityFactory.CreateBase(world, new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
+        var baseNode = factory.CreateBase(new Microsoft.Xna.Framework.Vector2(0, 0), logisticNetwork);
         // Subscribe: if any carrier is created, fail the test.
         world.Subscribe<Craftorio.Logistic.CarrierCreated>(AssertNoCarrierCreated);
         // Run for 5 seconds at 60fps

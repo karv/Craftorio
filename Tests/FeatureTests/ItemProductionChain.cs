@@ -53,11 +53,12 @@ public class ItemProductionChain
     [Test]
     public void SetupMiner()
     {
-        var ent0 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0));
-        var ent1 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0),
-        Speed: 1.5f);
-        var ent2 = EntityFactory.CreateMiner(world, new Microsoft.Xna.Framework.Vector2(0, 0),
-        Speed: 2f);
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
+        var ent0 = factory.CreateMiner(new Microsoft.Xna.Framework.Vector2(0, 0));
+        var ent1 =factory.CreateMiner(new Microsoft.Xna.Framework.Vector2(0, 0));
+        ent1.Get<Craftorio.Production.TimeConsumption>().Speed = 1.5f;
+        var ent2 =factory.CreateMiner(new Microsoft.Xna.Framework.Vector2(0, 0));
+        ent1.Get<Craftorio.Production.TimeConsumption>().Speed = 2f;
 
         var iterations = ItemProductionChain.iterations + 10; // Add 10 for the lost on cycle finishing for each expected completed item in the last assertion. ;
         for (int i = 0; i < iterations; i++)

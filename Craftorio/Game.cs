@@ -134,19 +134,18 @@ public class Game : Microsoft.Xna.Framework.Game
         constructionMiner.Set(logisticRequirements);
 
         // Add some miners with different speeds and targets
-        EntityFactory.CreateMiner(World, new(-20, 20), Cost: 1000, Speed: 1, ItemId: 1);
-        EntityFactory.CreateMiner(World, new(0, 20), Cost: 1000, Speed: 1.3f, ItemId: 2);
-        EntityFactory.CreateMiner(World, new(20, 20), Cost: 1000, Speed: 1.5f, ItemId: 3);
-        EntityFactory.CreateMiner(World, new(40, 20), Cost: 1000, Speed: 2f, ItemId: 4);
+        factory.CreateMiner(new(-20, 20), 1);
+        factory.CreateMiner(new(0, 20), 2);
+        factory.CreateMiner(new(20, 20), 3);
+        factory.CreateMiner(new(40, 20), 4);
 
         // Add a box that ask for item 1 and 2
-        EntityFactory.CreateStorageBox(World, new(100, 100), requests: new int[] { 10 });
+        factory.CreateStorageBox(new(100, 100), requests: new int[] { 10 });
 
         // A node so things work
-        EntityFactory.CreateBase(World, new(0, 0), network,
+        factory.CreateBase(new(0, 0), network,
             carrierCount: 3,
-            constructorCount: 3,
-            carrierDeploySpeed: 10);
+            constructorCount: 3);
 
         // An assembler that transforms itemId 1 to itemId 5 every 1 second
         var recipe = new Production.Recipe

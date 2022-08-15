@@ -13,28 +13,22 @@ public class Box : IBox
     /// </summary>
     private readonly Dictionary<int, int> items;
 
-    private int capacity = DefaultCapacity;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Box"/> class.
     /// </summary>
-    public Box()
+    public Box([Newtonsoft.Json.JsonProperty("Capacity")] int capacity = DefaultCapacity)
     {
+        if (capacity < 0)
+            throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity cannot be negative.");
+
+        Capacity = capacity;
         items = new();
     }
 
     /// <summary>
     /// Gets the capacity of the box.
     /// </summary>
-    public int Capacity
-    {
-        get => capacity;
-        init
-        {
-            if (value < 0) throw new InvalidOperationException("Capacity must be greater than or equal to zero.");
-            capacity = value;
-        }
-    }
+    public int Capacity { get; }
 
     /// <summary>
     /// Gets the free capacity.

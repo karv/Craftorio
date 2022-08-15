@@ -37,10 +37,9 @@ public class AssemblerToLNIntegration
         };
 
         var ent0 = factory.CreateAssembler(
-            new (0, 0),
+            new(0, 0),
             recipe);
-        var ent1 = EntityFactory.CreateStorageBox(
-            world,
+        var ent1 = factory.CreateStorageBox(
             new Microsoft.Xna.Framework.Vector2(0, 0),
             requests: new[] { 1 });
 
@@ -65,10 +64,10 @@ public class AssemblerToLNIntegration
     [SetUp]
     public void Setup()
     {
+        var factory = Craftorio.EntityFactory.CreateDefaultFactory(world);
         network = new Craftorio.Logistic.LogisticNetwork(world);
         // Create a base at origin
-        EntityFactory.CreateBase(
-            world,
+        factory.CreateBase(
             default,
             network);
     }

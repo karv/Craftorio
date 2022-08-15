@@ -29,7 +29,7 @@ public class Boxes
     [Test]
     public void AddItemIntoAZeroCapacityBox()
     {
-        var box = new Box { Capacity = 0 };
+        var box = new Box(0);
         Assert.IsFalse(box.TryStore(1, 1));
     }
 
@@ -54,7 +54,7 @@ public class Boxes
     [Test]
     public void AddingMoreThatCapacityMustNotChangeTheContent()
     {
-        var box = new Box { Capacity = 10 };
+        var box = new Box(10);
         var added = box.TryStore(1, 20);
         // The box must be empty
         Assert.IsFalse(added);
@@ -70,14 +70,14 @@ public class Boxes
     [Test]
     public void AddingNegativeAmountMustThrow()
     {
-        var box = new Box { Capacity = 10 };
+        var box = new Box(10);
         Assert.Throws<InvalidOperationException>(() => box.TryStore(1, -1));
     }
 
     [Test]
     public void AddingUpdateFreeCapacity()
     {
-        var box = new Box { Capacity = 10 };
+        var box = new Box(10);
         box.TryStore(1, 1);
         Assert.That(box.FreeCapacity, Is.EqualTo(9));
         Assert.That(box.UsedCapacity, Is.EqualTo(1));
@@ -90,13 +90,13 @@ public class Boxes
     [Test]
     public void NegativeCapacityBoxesMustNotExist()
     {
-        Assert.Throws<InvalidOperationException>(() => new Box { Capacity = -1 });
+        Assert.Throws<InvalidOperationException>(() => new Box(-1));
     }
 
     [Test]
     public void RemovingMultipleItemsNotEnoughItemsToRemove()
     {
-        var box = new Box { Capacity = 10 };
+        var box = new Box(10);
         // Add items of two different ids
         box.TryStore(0, 3);
         box.TryStore(1, 3);
@@ -142,7 +142,7 @@ public class Boxes
     [Test]
     public void StoreAsMuch_StoreAll()
     {
-        var box = new Box { Capacity = 100 };
+        var box = new Box(100);
         // create an array of stacks to store, in form of stacks
         // Store 20 items of type 0
         box.TryStoreAsMuchAsPossible(0, 20);
@@ -155,7 +155,7 @@ public class Boxes
     [Test]
     public void StoreAsMuch_StorePossible()
     {
-        var box = new Box { Capacity = 10 };
+        var box = new Box(10);
         // create an array of stacks to store, in form of stacks
         // Store 20 items of type 0
         box.TryStoreAsMuchAsPossible(0, 20);
@@ -168,7 +168,7 @@ public class Boxes
     [Test]
     public void StoreFromSpanNoCapacity()
     {
-        var box = new Box { Capacity = 2 };
+        var box = new Box(2);
         // create an array of stacks to store, in form of stacks
         var items = new ItemStack[2]{
             new ItemStack{ItemId = 0, Count = 1},
