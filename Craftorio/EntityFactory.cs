@@ -214,6 +214,14 @@ public class EntityFactory
     }
 
     /// <summary>
+    /// Gets the registered prototype with the given name.
+    /// </summary>
+    public EntityPrototype GetPrototype(string name)
+    {
+        return prototypes[name];
+    }
+
+    /// <summary>
     /// Register a prototype with a specified name.
     /// </summary>
     public void RegisterPrototype(string name, EntityPrototype prototype)

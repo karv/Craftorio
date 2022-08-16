@@ -23,6 +23,9 @@ public class Game : Microsoft.Xna.Framework.Game
 
         World = new World();
         network = new(World);
+
+        // Set the world's components
+        World.Set<UiState>();
     }
 
     /// <summary>
@@ -97,9 +100,29 @@ public class Game : Microsoft.Xna.Framework.Game
         );
     }
 
+    private void SetBuildingState(EntityPrototype prototype)
+    {
+        // Add an entity representing the building marker
+        var entity = World.CreateEntity();
+        entity.Set<Location>();
+        entity.Set<ForceMouseLocation>(); // The location is forced by the mouse.
+        entity.Set(new Drawing.Sprite
+        {
+            Color = Color.Purple * 0.4f,
+            // Copy the drawing area from the prototype
+            RelativeDrawingArea = prototype.GetComponent<Drawing.Sprite>().RelativeDrawingArea
+        });
+
+        // Tell the world we are building something
+        World.Get<UiState>().SelectedEntityPrototypeForConstruction = prototype;
+    }
+
     private void SetupInitialState(World World)
     {
         var factory = Services.GetService<EntityFactory>();
+
+        // Induce the building state with "miner-1" prototype
+        SetBuildingState(factory.GetPrototype("miner-1"));
 
         // Add a construction site for a miner.
         factory.CreateConstruction(new Vector2(-80, 0), "miner-1", new Dictionary<string, int> { { "1", 1 }, { "2", 1 } }, 5000);
@@ -129,8 +152,8 @@ public class Game : Microsoft.Xna.Framework.Game
 
         // Listen to events
         // World.Subscribe<Logistic.CarrierCreated>(When);
-        World.Subscribe<Production.ProductionCompleted>(When);
-        World.Subscribe<Production.ProductionStateChanged>(When);
+        // World.Subscribe<Production.ProductionCompleted>(When);
+        // World.Subscribe<Production.ProductionStateChanged>(When);
     }
 
     private void SetupServices()
