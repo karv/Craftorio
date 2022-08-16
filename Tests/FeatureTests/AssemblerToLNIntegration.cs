@@ -31,8 +31,8 @@ public class AssemblerToLNIntegration
         // Include the recipe requirements in the box of the assembler.
         var recipe = new Craftorio.Production.Recipe
         {
-            Outputs = new[] { new ItemStack { ItemId = 1, Count = 1 } },
-            Inputs = new[] { new ItemStack { ItemId = 0, Count = 1 } },
+            Outputs = new[] { new ItemStack { ItemId = "1", Count = 1 } },
+            Inputs = new[] { new ItemStack { ItemId = "0", Count = 1 } },
             BaseTime = 10 // 10 ms per batch
         };
 
@@ -41,10 +41,10 @@ public class AssemblerToLNIntegration
             recipe);
         var ent1 = factory.CreateStorageBox(
             new Microsoft.Xna.Framework.Vector2(0, 0),
-            requests: new[] { 1 });
+            requests: new[] { "1" });
 
         // Add some materials to the assembler.
-        ((Box)ent0.Get<IBox>()).TryStore(0, 10);
+        ((Box)ent0.Get<IBox>()).TryStore("0", 10);
         bool carrierCreated = false;
 
         // Run the system for 5 seconds, for then the assembler should have provided at least 1 item into the storage.

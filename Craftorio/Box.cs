@@ -11,7 +11,7 @@ public class Box : IBox
     /// <summary>
     /// The dictionary of items in the box. The key is the item ID, and the value is the item's quantity.
     /// </summary>
-    private readonly Dictionary<int, int> items;
+    private readonly Dictionary<string, int> items;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Box"/> class.
@@ -43,12 +43,20 @@ public class Box : IBox
     /// <summary>
     /// Gets the amount of items of the specified type. This is equivalent to the <see cref="GetCountOf"/> method.
     /// </summary>
-    public int this[int itemId] => GetCountOf(itemId);
+    public int this[string itemId] => GetCountOf(itemId);
+
+    /// <summary>
+    /// Gets the amount of items of the specified type.
+    /// </summary>
+    public int GetCountOf(string itemId)
+    {
+        return items.TryGetValue(itemId, out var ret) ? ret : 0;
+    }
 
     /// <summary>
     /// Gets a string representation of the content of the box.
     /// </summary>
-    public string DisplayContent()
+    public string GetDisplayContent()
     {
         if (items.Count == 0) return "Empty";
 
@@ -62,21 +70,13 @@ public class Box : IBox
     }
 
     /// <summary>
-    /// Gets the amount of items of the specified type.
-    /// </summary>
-    public int GetCountOf(int itemId)
-    {
-        return items.TryGetValue(itemId, out var ret) ? ret : 0;
-    }
-
-    /// <summary>
     /// Takes the specified items from this box, and updates the content of the box
     /// </summary>
     /// <param name="itemId">Type of items to take.</param>
     /// <param name="amount">Max amount of items to take.</param>
     /// <remarks>If the box doesn't contain enough items, the method will return the amount of items that could be taken.</remarks>
     /// <returns>A new stack representing the taken items.</returns>
-    public ItemStack Take(int itemId, int amount)
+    public ItemStack Take(string itemId, int amount)
     {
         amount = Math.Min(amount, GetCountOf(itemId));
         if (amount == 0) return default;
@@ -116,7 +116,7 @@ public class Box : IBox
     /// <param name="quantity">Positive value indicating the amount of items to store.</param>
     /// <returns><see langword="true"/> iff the items were stored.</returns>
     /// <remarks>If the box have no enough capacity, no items will be stored.</remarks>
-    public bool TryStore(int itemId, int quantity)
+    public bool TryStore(string itemId, int quantity)
     {
         if (quantity < 0) throw new InvalidOperationException("Quantity must be greater than or equal to zero.");
         if (quantity > FreeCapacity)
@@ -155,14 +155,14 @@ public class Box : IBox
     /// <param name="quantity">Positive value indicating the amount of items to store.</param>
     /// <returns><see langword="true"/> iff the items were stored.</returns>
     /// <remarks>If the box have no enough capacity, the max amount of items will be stored.</remarks>
-    public int TryStoreAsMuchAsPossible(int itemId, int quantity)
+    public int TryStoreAsMuchAsPossible(string itemId, int quantity)
     {
         var storeQt = Math.Min(quantity, FreeCapacity);
         TryStore(itemId, storeQt);
         return storeQt;
     }
 
-    private void RemoveUnchecked(int itemId, int quantity)
+    private void RemoveUnchecked(string itemId, int quantity)
     {
         if (!items.TryGetValue(itemId, out var count))
             throw new InvalidOperationException("Tried to remove an item that was not in the box.");
@@ -170,7 +170,7 @@ public class Box : IBox
         UsedCapacity -= quantity;
     }
 
-    private void UncheckedStore(int itemId, int quantity)
+    private void UncheckedStore(string itemId, int quantity)
     {
         if (items.ContainsKey(itemId))
             items[itemId] += quantity;

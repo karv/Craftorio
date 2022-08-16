@@ -101,16 +101,16 @@ public class Game : Microsoft.Xna.Framework.Game
         var factory = Services.GetService<EntityFactory>();
 
         // Add a construction site for a miner.
-        factory.CreateConstruction(new Vector2(-80, 0), "miner-1", new Dictionary<int, int> { { 1, 1 }, { 2, 1 } }, 5000);
+        factory.CreateConstruction(new Vector2(-80, 0), "miner-1", new Dictionary<string, int> { { "1", 1 }, { "2", 1 } }, 5000);
 
         // Add some miners with different speeds and targets
-        factory.CreateMiner(new(-20, 20), 1);
-        factory.CreateMiner(new(0, 20), 2);
-        factory.CreateMiner(new(20, 20), 3);
-        factory.CreateMiner(new(40, 20), 4);
+        factory.CreateMiner(new(-20, 20), "1");
+        factory.CreateMiner(new(0, 20), "2");
+        factory.CreateMiner(new(20, 20), "3");
+        factory.CreateMiner(new(40, 20), "4");
 
         // Add a box that ask for item 1 and 2
-        factory.CreateStorageBox(new(100, 100), requests: new int[] { 10 });
+        factory.CreateStorageBox(new(100, 100), requests: new string[] { "10" });
 
         // A node so things work
         factory.CreateBase(new(0, 0), network,
@@ -121,8 +121,8 @@ public class Game : Microsoft.Xna.Framework.Game
         var recipe = new Production.Recipe
         {
             BaseTime = 3000,
-            Inputs = new ItemStack[] { new ItemStack { ItemId = 1, Count = 1 } },
-            Outputs = new ItemStack[] { new ItemStack { ItemId = 5, Count = 1 } }
+            Inputs = new ItemStack[] { new ItemStack { ItemId = "1", Count = 1 } },
+            Outputs = new ItemStack[] { new ItemStack { ItemId = "5", Count = 1 } }
         };
         var asm = factory.CreateAssembler(new(-100, 100), recipe);
 
@@ -148,7 +148,7 @@ public class Game : Microsoft.Xna.Framework.Game
     private void When(in Production.ProductionCompleted msg)
     {
         var box = msg.ProducerEntity.Get<IBox>();
-        Console.WriteLine($"Production completed by: {msg.ProducerEntity}. Current box content: {box.DisplayContent()}");
+        Console.WriteLine($"Production completed by: {msg.ProducerEntity}. Current box content: {box.GetDisplayContent()}");
     }
 
     private void When(in Production.ProductionStateChanged msg)

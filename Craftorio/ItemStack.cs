@@ -13,5 +13,5 @@ public struct ItemStack
     /// <summary>
     /// Type of items.
     /// </summary>
-    public int ItemId { readonly get; init; }
+    public string ItemId { readonly get; init; }
 }

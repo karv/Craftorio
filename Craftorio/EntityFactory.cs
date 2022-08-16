@@ -115,7 +115,7 @@ public class EntityFactory
     public Entity CreateConstruction(
         Vector2 location,
         string prototypeName,
-        Dictionary<int, int> resourcesRequired,
+        Dictionary<string, int> resourcesRequired,
         int timeRequired)
     {
         return CreateConstruction(location, this.prototypes[prototypeName], resourcesRequired, timeRequired);
@@ -132,7 +132,7 @@ public class EntityFactory
     public Entity CreateConstruction(
         Vector2 location,
         Craftorio.EntityPrototype prototype,
-        Dictionary<int, int> resourcesRequired,
+        Dictionary<string, int> resourcesRequired,
         int timeRequired)
     {
         var ret = World.CreateEntity();
@@ -169,8 +169,7 @@ public class EntityFactory
     /// </summary>
     /// <param name="location">Location of the entity.</param>
     /// <param name="ItemId">Item that is mined.</param>
-    public Entity CreateMiner(Vector2 location,
-    int ItemId = 1)
+    public Entity CreateMiner(Vector2 location, string ItemId)
     {
         var ret = Create("miner-1");
         ret.Set(new Location(location));
@@ -188,7 +187,7 @@ public class EntityFactory
     /// <param name="isProvider">If set to <see langword="true"/>, this box will be considered as provider by the LN.</param>
     public Entity CreateStorageBox(Vector2 location,
     IBox? box = null,
-    int[]? requests = null,
+    string[]? requests = null,
     bool isProvider = false
     )
     {
@@ -200,7 +199,7 @@ public class EntityFactory
 
         if (!isProvider) ret.Remove<Logistic.ProvideData>();
 
-        requests ??= Array.Empty<int>();
+        requests ??= Array.Empty<string>();
         if (requests.Length > 0)
         {
             var req = new Logistic.RequestData();
@@ -209,7 +208,7 @@ public class EntityFactory
             ret.Set<Logistic.RequestData>(req);
         }
         ret.Set<Location>(new Location(location));
-        ret.Get<Drawing.UI.MouseOverDisplayText>().GetText = (Entity entity) => entity.Get<IBox>().DisplayContent();
+        ret.Get<Drawing.UI.MouseOverDisplayText>().GetText = (Entity entity) => entity.Get<IBox>().GetDisplayContent();
 
         return ret;
     }

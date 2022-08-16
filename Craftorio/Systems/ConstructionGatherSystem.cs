@@ -51,7 +51,7 @@ public class ConstructionGatherSystem : AEntitySetSystem<int>
     /// Determines if a box contains all the items in a dictionary.
     /// </summary>
     [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-    private static bool BoxContainsAllDictionary(IBox box, Dictionary<int, int> dictionary)
+    private static bool BoxContainsAllDictionary(IBox box, Dictionary<string, int> dictionary)
     {
         foreach (var (key, value) in dictionary)
             if (box[key] < value)
