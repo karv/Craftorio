@@ -76,6 +76,7 @@ public class Game : Microsoft.Xna.Framework.Game
     private void InitializeSystems()
     {
         updateSystem = new DefaultEcs.System.SequentialSystem<int>(
+            new KeyboardCameraMovement(World),
             new Production.TimeConsumingSystem(World),
             new Production.MiningSystem(World),
             new MovingObjectSystem(World),
