@@ -10,14 +10,14 @@ public class ProvideData
     /// <summary>
     /// The count of items which are expecting a carrier to take the content.
     /// </summary>
-    private Dictionary<int, int> onTheWayOrders { get; } = new Dictionary<int, int>();
+    private Dictionary<string, int> onTheWayOrders { get; } = new();
 
     /// <summary>
     /// Change the count of items which are current managed by the logistic network.
     /// </summary>
     /// <param name="itemId">Id of the item.</param>
     /// <param name="amount">Delta of the amount of items. A positive value means adding, negative means removing.</param>
-    public void ChangeCurrentOrders(int itemId, int amount)
+    public void ChangeCurrentOrders(string itemId, int amount)
     {
         // Add the request to the queue
         if (onTheWayOrders.TryGetValue(itemId, out var order))
@@ -34,7 +34,7 @@ public class ProvideData
     /// Adds the keys into the dictionary.
     /// </summary>
     [Obsolete("This is now handled automatically. Just remove this method call.")]
-    public void EnsureDictionaryKeys(IEnumerable<int> keys)
+    public void EnsureDictionaryKeys(IEnumerable<string> keys)
     {
         foreach (var key in keys)
         {

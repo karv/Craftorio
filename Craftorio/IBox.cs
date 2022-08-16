@@ -23,19 +23,19 @@ public interface IBox
     /// <summary>
     /// Gets the amount if items of a specified type.
     /// </summary>
-    public int this[int itemId] { get; }
+    public int this[string itemId] { get; }
 
     /// <summary>
     /// Creates a string representation of the content of the box.
     /// </summary>
-    public string DisplayContent();
+    public string GetDisplayContent();
     /// <summary>
     /// Takes items from the box. This will update the content of the box.
     /// </summary>
     /// <param name="itemId">Id of the type of the item to take.</param>
     /// <param name="amount">Non negative value indicating the amount of units of the item to take.</param>
     /// <returns>An item stack representing the taken items.</returns>
-    public ItemStack Take(int itemId, int amount);
+    public ItemStack Take(string itemId, int amount);
 
     /// <summary>
     /// Try to remove the specified collection of items from the box. If the box does not contain the specified items,
@@ -55,7 +55,7 @@ public interface IBox
     /// Try to add an item to the box.
     /// </summary>
     /// <returns>true if all the items were stores. False if no items were stored.</returns>
-    public bool TryStore(int itemId, int quantity);
+    public bool TryStore(string itemId, int quantity);
 
     /// <summary>
     /// Try to add an item to the box.
@@ -67,7 +67,7 @@ public interface IBox
     /// Try to add an item to the box.
     /// </summary>
     /// <returns>A non negative integer indicating how many items wre stored.</returns>
-    public int TryStoreAsMuchAsPossible(int itemId, int quantity)
+    public int TryStoreAsMuchAsPossible(string itemId, int quantity)
     {
         var storeQt = Math.Min(quantity, FreeCapacity);
         TryStore(itemId, storeQt);

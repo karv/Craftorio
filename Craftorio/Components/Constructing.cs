@@ -14,7 +14,7 @@ public record class Constructing
     /// <summary>
     /// A dictionary containing the resources required to construct the building.
     /// </summary>
-    public Dictionary<int, int>? RequiredResources;
+    public Dictionary<string, int>? RequiredResources;
 
     /// <summary>
     /// The base time required to construct the building if the speed is 1. In milliseconds.

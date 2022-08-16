@@ -18,7 +18,7 @@ public record struct LogisticOrder
     /// <summary>
     /// ID of the item to move.
     /// </summary>
-    public int ItemId { get; init; }
+    public string ItemId { get; init; }
 
     /// <summary>
     /// The source entity.

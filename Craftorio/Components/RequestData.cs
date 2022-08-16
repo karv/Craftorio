@@ -10,34 +10,34 @@ public class RequestData
     /// <summary>
     /// The count of items which are expecting a carrier to take the content.
     /// </summary>
-    private readonly Dictionary<int, int> onTheWayOrders = new Dictionary<int, int>();
+    private readonly Dictionary<string, int> onTheWayOrders = new();
 
     /// <summary>
     /// What is the request count of items. This value is not changed by the network, so are somehow constant.
     /// </summary>
-    private readonly Dictionary<int, int> requestDictionary = new Dictionary<int, int>();
+    private readonly Dictionary<string, int> requestDictionary = new();
 
-    private readonly ReadOnlyDictionary<int, int> requestDictionaryReadOnly;
+    private readonly ReadOnlyDictionary<string, int> requestDictionaryReadOnly;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RequestData"/> class.
     /// </summary>
     public RequestData()
     {
-        requestDictionaryReadOnly = new ReadOnlyDictionary<int, int>(requestDictionary);
+        requestDictionaryReadOnly = new(requestDictionary);
     }
 
     /// <summary>
     /// Readonly access of the request as a dictionary.
     /// </summary>
-    public ReadOnlyDictionary<int, int> AsDictionary => requestDictionaryReadOnly;
+    public ReadOnlyDictionary<string, int> AsDictionary => requestDictionaryReadOnly;
 
     /// <summary>
     /// Change the amount of requested items by this node in the network.
     /// </summary>
     /// <param name="itemId">Id of the item.</param>
     /// <param name="amount">Delta of the requested amount.</param>
-    public void AddRequest(int itemId, int amount)
+    public void AddRequest(string itemId, int amount)
     {
         if (requestDictionary.TryGetValue(itemId, out var order))
             requestDictionary[itemId] = order + amount;
@@ -50,7 +50,7 @@ public class RequestData
     /// </summary>
     /// <param name="itemId">Id of the item.</param>
     /// <param name="amount">Delta of the amount of items. A positive value means adding, negative means removing.</param>
-    public void ChangeCurrentOrders(int itemId, int amount)
+    public void ChangeCurrentOrders(string itemId, int amount)
     {
         // Add the request to the queue
         if (onTheWayOrders.TryGetValue(itemId, out var order))
@@ -66,7 +66,7 @@ public class RequestData
     /// <summary>
     /// Updates the request dictionary of a specified item id, to a specified amount.
     /// </summary>
-    public void ChangeRequestOf(int itemId, int amount)
+    public void ChangeRequestOf(string itemId, int amount)
     {
         if (requestDictionary.TryGetValue(itemId, out var order))
             requestDictionary[itemId] = amount;
@@ -84,7 +84,7 @@ public class RequestData
     /// Adds the keys into the dictionary.
     /// </summary>
     [Obsolete("This is now handled automatically. Just remove this method call.")]
-    public void EnsureDictionaryKeys(IEnumerable<int> keys)
+    public void EnsureDictionaryKeys(IEnumerable<string> keys)
     {
         foreach (var key in keys)
         {
@@ -96,7 +96,7 @@ public class RequestData
     /// <summary>
     /// Gets the count of items of the specified ID going out from this node, which are handled by the network
     /// </summary>
-    public int OrdersOf(int itemId)
+    public int OrdersOf(string itemId)
     {
         return onTheWayOrders.TryGetValue(itemId, out var ret) ? ret : 0;
     }
@@ -104,7 +104,7 @@ public class RequestData
     /// <summary>
     /// Gets a collection of items Ids that may be positive for the <see cref="OrdersOf"/> method.
     /// </summary>
-    public IReadOnlyCollection<int> RequestKeys()
+    public IReadOnlyCollection<string> RequestKeys()
     {
         return onTheWayOrders.Keys;
     }
@@ -112,7 +112,7 @@ public class RequestData
     /// <summary>
     /// Gets the amount of requests of the specified item.
     /// </summary>
-    public int RequestOf(int itemId)
+    public int RequestOf(string itemId)
     {
         return onTheWayOrders.TryGetValue(itemId, out var ret) ? ret : 0;
     }

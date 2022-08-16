@@ -10,5 +10,5 @@ public record struct ItemTarget
     /// ID of the target item.
     /// </summary>
     // TODO: should be changed for an index of a recipe?
-    public int ItemId;
+    public string ItemId;
 }
