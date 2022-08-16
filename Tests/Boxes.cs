@@ -62,7 +62,7 @@ public class Boxes
 
         // Use reflection to get the items field and check if it is empty
         var itemsField = typeof(Box).GetField("items", BindingFlags.Instance | BindingFlags.NonPublic);
-        var items = (Dictionary<int, int>)itemsField!.GetValue(box)!;
+        var items = (Dictionary<string, int>)itemsField!.GetValue(box)!;
         // We don't know whether the items dictionary is empty or not, but the sum of the values must be 0
         Assert.That(items.Sum(i => i.Value), Is.EqualTo(0));
     }
@@ -90,7 +90,7 @@ public class Boxes
     [Test]
     public void NegativeCapacityBoxesMustNotExist()
     {
-        Assert.Throws<InvalidOperationException>(() => new Box(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Box(-1));
     }
 
     [Test]
