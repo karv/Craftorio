@@ -80,6 +80,7 @@ public class Game : Microsoft.Xna.Framework.Game
             new Production.TimeConsumingSystem(World),
             new Production.MiningSystem(World),
             new MovingObjectSystem(World),
+            new ForceMouseLocationSystem(World),
             new Production.AssemblerProductionSystem(World),
             new Construction.ConstructorDeploySystem(World),
             new Logistic.BaseNodeCarrierCreationSystem(World),
