@@ -19,11 +19,20 @@ public class Game : Microsoft.Xna.Framework.Game
     {
         graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
+
         IsMouseVisible = true;
 
         World = new World();
         network = new(World);
+
+        // Set the world's components
+        World.Set<UiState>();
     }
+
+    /// <summary>
+    /// This is the mouse input controller.
+    /// </summary>
+    public CE.MG.Input.MouseListener MouseListener { get; } = new();
 
     /// <summary>
     /// The game ECS world.
@@ -71,6 +80,7 @@ public class Game : Microsoft.Xna.Framework.Game
             Exit();
 
         updateSystem!.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
+        MouseListener.Update();
     }
 
     private void InitializeSystems()
@@ -80,6 +90,7 @@ public class Game : Microsoft.Xna.Framework.Game
             new Production.TimeConsumingSystem(World),
             new Production.MiningSystem(World),
             new MovingObjectSystem(World),
+            new ForceMouseLocationSystem(World),
             new Production.AssemblerProductionSystem(World),
             new Construction.ConstructorDeploySystem(World),
             new Logistic.BaseNodeCarrierCreationSystem(World),
@@ -94,11 +105,39 @@ public class Game : Microsoft.Xna.Framework.Game
             new Drawing.SpriteDrawing(World, GraphicsDevice),
             new Drawing.TextDrawing(World, GraphicsDevice)
         );
+
+        // And setup the reactive systems
+        new Craftorio.Construction.BuildingPrototypeReactive(
+            World,
+            MouseListener.Publisher,
+            Services.GetService<EntityFactory>()).IsEnabled = true;
+    }
+
+    // This is a debug method to setup the construction state of the game.
+    // when implemented, just copy this code.
+    private void SetBuildingState(EntityPrototype prototype)
+    {
+        // Add an entity representing the building marker
+        var entity = World.CreateEntity();
+        entity.Set<Location>();
+        entity.Set<ForceMouseLocation>(); // The location is forced by the mouse.
+        entity.Set(new Drawing.Sprite
+        {
+            Color = Color.Purple * 0.4f,
+            // Copy the drawing area from the prototype
+            RelativeDrawingArea = prototype.GetComponent<Drawing.Sprite>().RelativeDrawingArea
+        });
+
+        // Tell the world we are building something
+        World.Get<UiState>().SelectedEntityPrototypeForConstruction = prototype;
     }
 
     private void SetupInitialState(World World)
     {
         var factory = Services.GetService<EntityFactory>();
+
+        // Induce the building state with "miner-1" prototype
+        SetBuildingState(factory.GetPrototype("miner-1"));
 
         // Add a construction site for a miner.
         factory.CreateConstruction(new Vector2(-80, 0), "miner-1", new Dictionary<string, int> { { "1", 1 }, { "2", 1 } }, 5000);
@@ -128,8 +167,8 @@ public class Game : Microsoft.Xna.Framework.Game
 
         // Listen to events
         // World.Subscribe<Logistic.CarrierCreated>(When);
-        World.Subscribe<Production.ProductionCompleted>(When);
-        World.Subscribe<Production.ProductionStateChanged>(When);
+        // World.Subscribe<Production.ProductionCompleted>(When);
+        // World.Subscribe<Production.ProductionStateChanged>(When);
     }
 
     private void SetupServices()

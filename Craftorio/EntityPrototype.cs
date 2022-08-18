@@ -61,6 +61,14 @@ public class EntityPrototype
     }
 
     /// <summary>
+    /// Gets the component of the type <typeparamref name="T"/> from this prototype.
+    /// </summary>
+    public T GetComponent<T>() where T : notnull
+    {
+        return (T)components[typeof(T)];
+    }
+
+    /// <summary>
     /// Gets a readonly accessor to the components of this prototype, by type.
     /// </summary>
     /// <returns>A new readonly dictionary accessor whose keys are the type of the components and the value are the component of

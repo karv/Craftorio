@@ -13,6 +13,7 @@ public class MovingObjectSystem : AEntitySetSystem<int>
         base(world.GetEntities()
             .With<Location>()
             .With<MovingObject>()
+            .Without<ForceMouseLocation>()
             .AsSet())
     {
     }
