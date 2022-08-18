@@ -29,6 +29,9 @@ public class Game : Microsoft.Xna.Framework.Game
         World.Set<UiState>();
     }
 
+    /// <summary>
+    /// This is the mouse input controller.
+    /// </summary>
     public CE.MG.Input.MouseListener MouseListener { get; } = new();
 
     /// <summary>
