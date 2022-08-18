@@ -19,6 +19,7 @@ public class Game : Microsoft.Xna.Framework.Game
     {
         graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
+
         IsMouseVisible = true;
 
         World = new World();
@@ -27,6 +28,8 @@ public class Game : Microsoft.Xna.Framework.Game
         // Set the world's components
         World.Set<UiState>();
     }
+
+    public CE.MG.Input.MouseListener MouseListener { get; } = new();
 
     /// <summary>
     /// The game ECS world.
@@ -74,6 +77,7 @@ public class Game : Microsoft.Xna.Framework.Game
             Exit();
 
         updateSystem!.Update((int)gameTime.ElapsedGameTime.TotalMilliseconds);
+        MouseListener.Update();
     }
 
     private void InitializeSystems()
@@ -98,8 +102,16 @@ public class Game : Microsoft.Xna.Framework.Game
             new Drawing.SpriteDrawing(World, GraphicsDevice),
             new Drawing.TextDrawing(World, GraphicsDevice)
         );
+
+        // And setup the reactive systems
+        new Craftorio.Construction.BuildingPrototypeReactive(
+            World,
+            MouseListener.Publisher,
+            Services.GetService<EntityFactory>()).IsEnabled = true;
     }
 
+    // This is a debug method to setup the construction state of the game.
+    // when implemented, just copy this code.
     private void SetBuildingState(EntityPrototype prototype)
     {
         // Add an entity representing the building marker
